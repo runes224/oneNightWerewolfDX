@@ -21,12 +21,17 @@
           </div>
           <div v-if="status == 'start'">
             <v-divider></v-divider>
-            <ul style="list-style: none" v-for="role in roles" v-bind:key="role.name">
-              <li>
-                {{role.name}}：
-                <input v-model="role.number" style="width: 0.5rem;" />人
-              </li>
-            </ul>
+            残り{{remainCounter}}枚、役職を増やしてください。
+            <div class="counter-area" v-for="role in roles" v-bind:key="role.name">
+              {{role.name}}：
+              <div class="btn-counter">
+                <button class="minus-button">-</button>
+                <div style="flex: 1">
+                  <input v-model="role.number" type="text" style="height: 100%;width: 100%;" />
+                </div>
+                <button class="plus-button">+</button>
+              </div>人
+            </div>
             <button @click="startGame">ゲーム開始</button>
           </div>
           <div v-if="status == 'morning'" class="direction-column">
@@ -94,6 +99,15 @@ export default {
   computed: {
     isConnected() {
       return this.ws !== null;
+    },
+    remainCounter() {
+      let roleCount = 0;
+      console.log(roleCount);
+      for (var role of this.roles) {
+        roleCount = roleCount + role.number;
+        console.log(roleCount);
+      }
+      return this.users.length - roleCount + 2;
     }
   },
   methods: {
@@ -151,24 +165,12 @@ export default {
         const myCardArray = this.outsideCards.filter(
           card => card.name === this.name
         );
-        // this.outsideCards[card.num].role = this.role;
-        // console.log(card.role);
-        // console.log(this.outsideCards[myCard[0].num].role);
-        // console.log(myCard[0].num);
-        // this.outsideCards[myCard[0].num].role = card.role;
-        // this.role = card.role;
-        // console.log(this.outsideCards);
-        // this.outsideCards.splice();
         const myCard = myCardArray[0];
-        console.log(myCard);
         this.role = card.role;
         myCard.name = card.name;
         card.name = this.name;
-        console.log(this.outsideCards[0]);
-        console.log(this.outsideCards[1]);
         this.outsideCards.splice(myCard.num, 1, card);
         this.outsideCards.splice(card.num, 1, myCard);
-        console.log(this.outsideCards);
       }
       this.doneNightActionFlag = true;
     }
@@ -327,5 +329,48 @@ input {
 .direction-column {
   display: flex;
   flex-direction: column;
+}
+
+.counter-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.btn-counter {
+  display: flex;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  height: 32px;
+  width: 100px;
+  border-radius: 8px;
+  margin-left: 2px;
+  margin-right: 2px;
+}
+
+.minus-button {
+  /* Center the content */
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+
+  /* Size */
+  width: 32px;
+}
+
+.plus-button {
+  /* Center the content */
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.05);
+  border-color: transparent;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+
+  /* Size */
+  width: 32px;
 }
 </style>
