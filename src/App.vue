@@ -1,11 +1,11 @@
 <template>
   <v-app>
     <!-- header -->
-    <div style="display: center;">
+    <div>
       <v-app-bar color="gray accent-4" dark>
         <v-toolbar-title>ワンナイト人狼DX</v-toolbar-title>
-        <div class="flex-grow-1"></div>
-        <div v-if="nameFlag" style="display: inline-flex;">
+        <v-spacer></v-spacer>
+        <div v-if="nameFlag" style="display: inline-flex; padding-bottom: 0;">
           <p>ログインユーザ：</p>
           <p>{{users.length}}人</p>
         </div>
@@ -15,24 +15,25 @@
       <div id="app">
         <button v-if="!isConnected" @click="connect">接続</button>
         <div v-if="isConnected">
-          <div v-if="!nameFlag">
-            <input placeholder="Enter your name" v-model="name" />
-            <button @click="registerName">送信</button>
+          <div v-if="!nameFlag" class="register-name">
+            <v-form style="width: 15rem;" ref="register_name_form">
+              <v-text-field v-model="name" label="名前を入力してください" :rules="[required]"></v-text-field>
+            </v-form>
+            <v-btn @click="registerName" style="margin-top: 0.8rem; margin-left: 1rem;">送信</v-btn>
           </div>
           <div v-if="status == 'start'">
-            <v-divider></v-divider>
-            残り{{remainCounter}}枚、役職を増やしてください。
+            <div class="margin_1">残り{{remainCounter}}枚、役職を増やしてください。</div>
             <div class="counter-area" v-for="role in roles" v-bind:key="role.name">
-              {{role.name}}：
-              <div class="btn-counter">
-                <button class="minus-button">-</button>
-                <div style="flex: 1">
-                  <input v-model="role.number" type="text" style="height: 100%;width: 100%;" />
-                </div>
-                <button class="plus-button">+</button>
-              </div>人
+              <div class="role-name">{{role.name}}：</div>
+              <number-input-spinner
+                :min="0"
+                :max="10"
+                :step="1"
+                :integerOnly="true"
+                v-model="role.number"
+              ></number-input-spinner>
             </div>
-            <button @click="startGame">ゲーム開始</button>
+            <v-btn color="primary" @click="startGame" class="margin_1">ゲーム開始</v-btn>
           </div>
           <div v-if="status == 'morning'" class="direction-column">
             <!-- カードエリア -->
@@ -60,10 +61,12 @@
             </div>
           </div>
           <!-- メッセージエリア -->
-          <v-divider></v-divider>
-          <ul style="list-style: none" v-for="message in messages" v-bind:key="message">
-            <li>{{message}}</li>
-          </ul>
+          <div v-if="nameFlag" class="kakomi">
+            <ul style="list-style: none" v-for="message in messages" v-bind:key="message">
+              <li>{{message}}</li>
+              <v-divider></v-divider>
+            </ul>
+          </div>
         </div>
       </div>
     </v-container>
@@ -87,13 +90,22 @@ export default {
       insideCards: [],
       outsideCards: [],
       roles: [
-        { name: "村人", number: 1 },
-        { name: "人狼", number: 0 },
-        { name: "占い師", number: 1 },
-        { name: "怪盗", number: 1 },
-        { name: "軍人", number: 0 },
-        { name: "狂人", number: 0 }
-      ]
+        { name: "村人", number: 2, description: "狼の嘘を見破りましょう" },
+        { name: "人狼", number: 2, description: "村人を欺きましょう" },
+        {
+          name: "占い師",
+          number: 1,
+          description: "誰かのカードか余ったカードを確認できます"
+        },
+        { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
+        {
+          name: "軍人",
+          number: 0,
+          description: "村人よりちょっとだけ強いです"
+        },
+        { name: "狂人", number: 0, description: "人狼の勝利があなたの勝利です" }
+      ],
+      required: value => !!value || "必ず入力してください" // 入力必須の制約
     };
   },
   computed: {
@@ -102,16 +114,18 @@ export default {
     },
     remainCounter() {
       let roleCount = 0;
-      console.log(roleCount);
       for (var role of this.roles) {
         roleCount = roleCount + role.number;
-        console.log(roleCount);
       }
       return this.users.length - roleCount + 2;
     }
   },
   methods: {
     registerName() {
+      if (!this.$refs.register_name_form.validate()) {
+        return;
+      }
+
       const data = {
         action: "registerName",
         data: this.name
@@ -149,6 +163,9 @@ export default {
           let card = this.insideCards[index];
           card.design = card.role;
           this.insideCards.splice(index, 1, card);
+          this.messages.push(
+            "中央の伏せカード" + (index + 1) + ":" + card.role
+          );
         }
       }
       this.doneNightActionFlag = true;
@@ -160,6 +177,7 @@ export default {
       if (this.role == "占い師") {
         card.design = card.role;
         this.outsideCards.splice(card.num, 1, card);
+        this.messages.push(card.name + "さんのカードは" + card.role + "でした");
       } else if (this.role == "怪盗") {
         card.design = card.role;
         const myCardArray = this.outsideCards.filter(
@@ -171,6 +189,9 @@ export default {
         card.name = this.name;
         this.outsideCards.splice(myCard.num, 1, card);
         this.outsideCards.splice(card.num, 1, myCard);
+        this.messages.push(
+          myCard.name + "さんのカード（" + card.role + "）と交換しました"
+        );
       }
       this.doneNightActionFlag = true;
     }
@@ -196,17 +217,22 @@ export default {
           {
             console.log(JSON.parse(event.data));
             let receivedRoles = JSON.parse(event.data).userRoles;
-            console.log(receivedRoles);
             this.role = receivedRoles[this.name];
+            this.messages = [];
             this.messages.push("あなたの役職は" + this.role + "です。");
+            this.roles.forEach(role => {
+              if (role.name === this.role) {
+                this.messages.push(role.description);
+              }
+            });
 
             // カードを配る
             let i = 0;
+            console.log(receivedRoles);
             Object.entries(receivedRoles).map(([key, value]) => {
               let obj = {};
               if (key == this.name) {
                 obj = { name: key, role: value, design: value, num: i };
-                // this.mycard = obj;
               } else {
                 obj = { name: key, role: value, design: "back", num: i };
               }
@@ -217,6 +243,15 @@ export default {
               }
               i++;
             });
+            if (this.role == "人狼") {
+              this.outsideCards.forEach(card => {
+                if (card.role === "人狼" && card.name !== this.name) {
+                  card.design = card.role;
+                  this.outsideCards.splice(card.num, 1, card);
+                  this.messages.push(card.name + "さんも人狼です");
+                }
+              });
+            }
             this.status = "morning";
           }
           break;
@@ -235,15 +270,26 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: "M PLUS Rounded 1c", Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
 }
 
-.v-toolbar__content {
-  display: inline-flex !important;
+.register-name {
+  display: flex;
+  justify-content: center;
+}
+
+.kakomi {
+  padding: 1rem 1rem;
+  width: 90%; /*幅の調節*/
+  color: #777777; /* 文字色 */
+  background-color: #fff; /* 背景色 */
+  border: 4px solid #f6bfbc; /*線の太さ・色*/
+  border-radius: 3em 0.8em 3em 0.7em/0.9em 2em 0.8em 3em;
+  margin: 10px auto;
 }
 
 input {
@@ -338,39 +384,12 @@ input {
   margin-bottom: 2px;
 }
 
-.btn-counter {
-  display: flex;
-  border: 1px solid rgba(0, 0, 0, 0.3);
-  height: 32px;
-  width: 100px;
-  border-radius: 8px;
-  margin-left: 2px;
-  margin-right: 2px;
+.role-name {
+  width: 5rem;
+  line-height: 2.5rem;
 }
 
-.minus-button {
-  /* Center the content */
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: transparent;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-
-  /* Size */
-  width: 32px;
-}
-
-.plus-button {
-  /* Center the content */
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.05);
-  border-color: transparent;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-
-  /* Size */
-  width: 32px;
+.margin_1 {
+  margin: 1rem 1rem;
 }
 </style>
