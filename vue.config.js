@@ -2,6 +2,6 @@ module.exports = {
   "transpileDependencies": [
     "vuetify"
   ],
-  publicPath: '/one_night_jinro_dx/',
+  publicPath: '/oneNightWerewolfDX/',
   outputDir: 'docs'
 }
