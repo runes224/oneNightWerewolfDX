@@ -1,0 +1,123 @@
+#app {
+  font-family: "M PLUS Rounded 1c", Avenir, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+}
+
+.register-name {
+  display: flex;
+  justify-content: center;
+}
+
+.kakomi {
+  padding: 1rem 1rem;
+  width: 90%; /*幅の調節*/
+  color: #777777; /* 文字色 */
+  background-color: #fff; /* 背景色 */
+  border: 4px solid #f6bfbc; /*線の太さ・色*/
+  border-radius: 3em 0.8em 3em 0.7em/0.9em 2em 0.8em 3em;
+  margin: 10px auto;
+}
+
+input {
+  width: 15rem;
+}
+
+#outside-cards,
+#inside-cards {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 70px;
+  height: 90px;
+  line-height: 90px;
+  border: 1px solid silver;
+  border-radius: 10px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  box-shadow: gray 2px 2px;
+  background: white;
+  float: left;
+  cursor: pointer;
+}
+.card-area {
+  padding: 8px 8px;
+}
+/* 裏の状態 */
+.back {
+  background-image: url("./assets/card_back.png");
+  background-size: 70px 90px;
+}
+.村人 {
+  background-image: url("./assets/村人.png");
+  background-size: 70px 90px;
+}
+.怪盗 {
+  background-image: url("./assets/怪盗.png");
+  background-size: 70px 90px;
+}
+.軍人 {
+  background-image: url("./assets/軍人.png");
+  background-size: 70px 90px;
+}
+.人狼 {
+  background-image: url("./assets/人狼.png");
+  background-size: 70px 90px;
+}
+.占い師 {
+  background-image: url("./assets/占い師.png");
+  background-size: 70px 90px;
+}
+.狂人 {
+  background-image: url("./assets/狂人.png");
+  background-size: 70px 90px;
+}
+
+/* 表面の表示
+.is-surface .card_surface {
+  opacity: 1;
+  transform: rotateY(0deg);
+  transition: opacity 100ms 150ms, transform 300ms 150ms;
+}
+.is-surface .card_reverse {
+  opacity: 0;
+  transform: rotateY(90deg);
+  transition: opacity 50ms 200ms, transform 300ms;
+}
+/* 裏面の表示 */
+/* .is-reverse .card_surface {
+  opacity: 0;
+  transform: rotateY(90deg);
+  transition: opacity 50ms 200ms, transform 300ms;
+}
+.is-reverse .card_reverse {
+  opacity: 1;
+  transform: rotateY(0deg);
+  transition: opacity 100ms 150ms, transform 300ms 150ms;
+} */ */
+
+.direction-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-area {
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.role-name {
+  width: 5rem;
+  line-height: 2.5rem;
+}
+
+.margin_1 {
+  margin: 1rem 1rem;
+}

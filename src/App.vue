@@ -35,7 +35,32 @@
             </div>
             <v-btn color="primary" @click="startGame" class="margin_1">ゲーム開始</v-btn>
           </div>
-          <div v-if="status == 'morning'" class="direction-column">
+          <div v-if="status != 'start' && nameFlag" class="direction-column">
+            <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
+            <v-row justify="center">
+              <v-dialog v-model="dialog" scrollable max-width="25rem">
+                <template v-slot:activator="{ on }">
+                  <v-btn color="red lighten-2" dark v-on="on">投票する</v-btn>
+                </template>
+                <v-card>
+                  <v-card-title>投票する相手を選択してください</v-card-title>
+                  <v-divider></v-divider>
+                  <v-card-text style="height: 300px;">
+
+                    <v-radio-group v-model="votedUser" column>
+                      <div v-for="user in users" v-bind:key="user">
+                        <v-radio label="user" value="user"></v-radio>
+                      </div>
+                    </v-radio-group>
+                  </v-card-text>
+                  <v-divider></v-divider>
+                  <v-card-actions>
+                    <v-btn color="blue darken-1" text @click="dialog = false">キャンセル</v-btn>
+                    <v-btn color="blue darken-1" text @click="dialog = false">送信</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+            </v-row>
             <!-- カードエリア -->
             <div id="inside-cards">
               <div
@@ -74,7 +99,12 @@
 </template>
 
 <script>
+import Timer from "./components/Timer.vue";
+
 export default {
+  components: {
+    Timer
+  },
   name: "App",
   data() {
     return {
@@ -85,16 +115,19 @@ export default {
       connection: null,
       status: "",
       doneNightActionFlag: false,
+      dialog: false,
+      votedUser: "",
+      nightPeriodSecond: 0,
       messages: [],
       users: [],
       insideCards: [],
       outsideCards: [],
       roles: [
-        { name: "村人", number: 2, description: "狼の嘘を見破りましょう" },
+        { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
         { name: "人狼", number: 2, description: "村人を欺きましょう" },
         {
           name: "占い師",
-          number: 1,
+          number: 3,
           description: "誰かのカードか余ったカードを確認できます"
         },
         { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
@@ -135,18 +168,6 @@ export default {
       this.status = "start";
 
       this.connection.send(JSON.stringify(data));
-    },
-    sendMessage() {
-      console.log(this.connection);
-
-      const data = {
-        action: "sendmessage",
-        data: this.inputMessage
-      };
-
-      this.connection.send(JSON.stringify(data));
-
-      this.inputMessage = "";
     },
     startGame() {
       const data = {
@@ -194,6 +215,9 @@ export default {
         );
       }
       this.doneNightActionFlag = true;
+    },
+    startVotingParent() {
+      this.status = "voting";
     }
   },
   created() {
@@ -253,9 +277,11 @@ export default {
               });
             }
             this.status = "morning";
+            this.nightPeriodSecond = 10;
           }
           break;
         default:
+          console.log(JSON.parse(event.data));
           this.messages.push("予期せぬデータを受信しました");
       }
     };
@@ -347,29 +373,6 @@ input {
 .狂人 {
   background-image: url("./assets/狂人.png");
   background-size: 70px 90px;
-}
-
-/* 表面の表示 */
-.is-surface .card_surface {
-  opacity: 1;
-  transform: rotateY(0deg);
-  transition: opacity 100ms 150ms, transform 300ms 150ms;
-}
-.is-surface .card_reverse {
-  opacity: 0;
-  transform: rotateY(90deg);
-  transition: opacity 50ms 200ms, transform 300ms;
-}
-/* 裏面の表示 */
-.is-reverse .card_surface {
-  opacity: 0;
-  transform: rotateY(90deg);
-  transition: opacity 50ms 200ms, transform 300ms;
-}
-.is-reverse .card_reverse {
-  opacity: 1;
-  transform: rotateY(0deg);
-  transition: opacity 100ms 150ms, transform 300ms 150ms;
 }
 
 .direction-column {
