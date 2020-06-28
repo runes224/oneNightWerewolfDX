@@ -15,11 +15,8 @@
       <div id="app">
         <button v-if="!isConnected" @click="connect">接続</button>
         <div v-if="isConnected">
-          <div v-if="!nameFlag" class="register-name">
-            <v-form style="width: 15rem;" ref="register_name_form">
-              <v-text-field v-model="name" label="名前を入力してください" :rules="[required]"></v-text-field>
-            </v-form>
-            <v-btn @click="registerName" style="margin-top: 0.8rem; margin-left: 1rem;">送信</v-btn>
+          <div v-show="!nameFlag" class="register-name">
+            <register @chileEvent="registerName"></register>
           </div>
           <div v-if="status == 'start'">
             <div class="margin_1">残り{{remainCounter}}枚、役職を増やしてください。</div>
@@ -77,14 +74,14 @@
             <v-divider></v-divider>
             <div id="outside-cards">
               <div
-                class="direction-column card-area"
+                :class="['direction-column', 'card-area', isMyCard(card.name)]"
                 v-for="card in outsideCards"
                 v-bind:key="card.name"
                 @click="nightActionOutside(card)"
               >
-                <div class="card" v-bind:class="card.design"></div>
+                <div class="card" :class="card.design"></div>
                 {{card.name}}
-                <span v-if="status == 'resultAnnouncement'">投票数：{{card.votedNum}}</span>
+                <span v-if="status == 'resultAnnouncement'" style="color: black;">投票数：{{card.votedNum}}</span>
               </div>
             </div>
           </div>
@@ -103,15 +100,17 @@
 
 <script>
 import Timer from "./components/Timer.vue";
+import Register from "./components/RegisterNameForm.vue";
 
 export default {
   components: {
-    Timer
+    Timer,
+    register: Register
   },
   name: "App",
   data() {
     return {
-      name: "",
+      yourName: "",
       role: "",
       nameFlag: false,
       inputMessage: "",
@@ -142,8 +141,7 @@ export default {
           description: "村人よりちょっとだけ強いです"
         },
         { name: "狂人", number: 0, description: "人狼の勝利があなたの勝利です" }
-      ],
-      required: value => !!value || "必ず入力してください" // 入力必須の制約
+      ]
     };
   },
   computed: {
@@ -158,23 +156,27 @@ export default {
       return this.users.length - roleCount + 2;
     },
     otherUsers() {
-      return this.users.filter(user => user !== this.name);
+      return this.users.filter(user => user !== this.yourName);
     }
   },
   methods: {
-    registerName() {
-      if (!this.$refs.register_name_form.validate()) {
-        return;
+    isMyCard(name) {
+      if (this.yourName === name) {
+        return 'myCard'
       }
-
+      return ''
+    },
+    registerName(name) {
+      console.log(name);
+      this.yourName = name;
+      console.log('this.yourName')
+      console.log(this.yourName)
       const data = {
         action: "registerName",
-        data: this.name
+        data: this.yourName
       };
-
       this.nameFlag = true;
       this.status = "start";
-
       this.connection.send(JSON.stringify(data));
     },
     startGame() {
@@ -213,11 +215,11 @@ export default {
       } else if (this.role == "怪盗") {
         choicedCard.design = choicedCard.role;
         const myCard = this.outsideCards.filter(
-          outsideCard => outsideCard.name === this.name
+          outsideCard => outsideCard.name === this.yourName
         )[0];
         this.role = choicedCard.role;
         myCard.name = choicedCard.name;
-        choicedCard.name = this.name;
+        choicedCard.name = this.yourName;
         const myCardNum = myCard.num;
         const choicedCardNum = choicedCard.num;
         myCard.num = choicedCardNum;
@@ -228,8 +230,6 @@ export default {
         this.messages.push(
           myCard.name + "さんのカード（" + choicedCard.role + "）と交換しました"
         );
-        console.log("夜の行動後");
-        console.log(this.outsideCards);
       }
       this.doneNightActionFlag = true;
     },
@@ -269,7 +269,7 @@ export default {
         case "roles":
           {
             let receivedRoles = JSON.parse(event.data).userRoles;
-            this.role = receivedRoles[this.name];
+            this.role = receivedRoles[this.yourName];
             this.messages = [];
             this.messages.push("あなたの役職は" + this.role + "です。");
             this.roles.forEach(role => {
@@ -282,7 +282,7 @@ export default {
             let i = 0;
             Object.entries(receivedRoles).map(([key, value]) => {
               let obj = {};
-              if (key == this.name) {
+              if (key == this.yourName) {
                 obj = {
                   name: key,
                   role: value,
@@ -308,7 +308,7 @@ export default {
             });
             if (this.role == "人狼") {
               this.outsideCards.forEach(card => {
-                if (card.role === "人狼" && card.name !== this.name) {
+                if (card.role === "人狼" && card.name !== this.yourName) {
                   card.design = card.role;
                   this.outsideCards.splice(card.num, 1, card);
                   this.messages.push(card.name + "さんも人狼です");
@@ -390,9 +390,8 @@ export default {
   color: #2c3e50;
 }
 
-.register-name {
-  display: flex;
-  justify-content: center;
+.myCard {
+  color: #f6bfbc;
 }
 
 .kakomi {
