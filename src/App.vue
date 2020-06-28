@@ -37,7 +37,7 @@
           </div>
           <div v-if="status != 'start' && nameFlag" class="direction-column">
             <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
-            <v-row justify="center">
+            <v-row justify="center" v-if="status == 'voting'">
               <v-dialog v-model="dialog" scrollable max-width="25rem">
                 <template v-slot:activator="{ on }">
                   <v-btn color="red lighten-2" dark v-on="on">投票する</v-btn>
@@ -46,17 +46,19 @@
                   <v-card-title>投票する相手を選択してください</v-card-title>
                   <v-divider></v-divider>
                   <v-card-text style="height: 300px;">
-
                     <v-radio-group v-model="votedUser" column>
-                      <div v-for="user in users" v-bind:key="user">
-                        <v-radio label="user" value="user"></v-radio>
-                      </div>
+                      <v-radio
+                        v-for="user in this.otherUsers"
+                        :key="user"
+                        :label="user"
+                        :value="user"
+                      ></v-radio>
                     </v-radio-group>
                   </v-card-text>
                   <v-divider></v-divider>
                   <v-card-actions>
                     <v-btn color="blue darken-1" text @click="dialog = false">キャンセル</v-btn>
-                    <v-btn color="blue darken-1" text @click="dialog = false">送信</v-btn>
+                    <v-btn color="blue darken-1" text @click="vote">送信</v-btn>
                   </v-card-actions>
                 </v-card>
               </v-dialog>
@@ -82,6 +84,7 @@
               >
                 <div class="card" v-bind:class="card.design"></div>
                 {{card.name}}
+                <span v-if="status == 'resultAnnouncement'">投票数：{{card.votedNum}}</span>
               </div>
             </div>
           </div>
@@ -117,17 +120,19 @@ export default {
       doneNightActionFlag: false,
       dialog: false,
       votedUser: "",
+      votedCounter: 0,
       nightPeriodSecond: 0,
       messages: [],
       users: [],
       insideCards: [],
       outsideCards: [],
+      resultOutsideCards: [],
       roles: [
         { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
         { name: "人狼", number: 2, description: "村人を欺きましょう" },
         {
           name: "占い師",
-          number: 3,
+          number: 1,
           description: "誰かのカードか余ったカードを確認できます"
         },
         { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
@@ -151,7 +156,10 @@ export default {
         roleCount = roleCount + role.number;
       }
       return this.users.length - roleCount + 2;
-    }
+    },
+    otherUsers() {
+      return this.users.filter(user => user !== this.name);
+    },
   },
   methods: {
     registerName() {
@@ -218,6 +226,18 @@ export default {
     },
     startVotingParent() {
       this.status = "voting";
+    },
+    vote() {
+      this.dialog = false;
+
+      const data = {
+        action: "vote",
+        votedUser: this.votedUser,
+        role: this.role,
+        outsideCards: this.outsideCards
+      };
+
+      this.connection.send(JSON.stringify(data));
     }
   },
   created() {
@@ -239,7 +259,6 @@ export default {
           break;
         case "roles":
           {
-            console.log(JSON.parse(event.data));
             let receivedRoles = JSON.parse(event.data).userRoles;
             this.role = receivedRoles[this.name];
             this.messages = [];
@@ -252,13 +271,12 @@ export default {
 
             // カードを配る
             let i = 0;
-            console.log(receivedRoles);
             Object.entries(receivedRoles).map(([key, value]) => {
               let obj = {};
               if (key == this.name) {
-                obj = { name: key, role: value, design: value, num: i };
+                obj = { name: key, role: value, design: value, num: i , votedNum: 0};
               } else {
-                obj = { name: key, role: value, design: "back", num: i };
+                obj = { name: key, role: value, design: "back", num: i , votedNum: 0};
               }
               if (obj.name.match(/^notAssigned/)) {
                 this.insideCards.push(obj);
@@ -277,8 +295,43 @@ export default {
               });
             }
             this.status = "morning";
-            this.nightPeriodSecond = 10;
+            this.nightPeriodSecond = 5;
+            // this.nightPeriodSecond = 20;
           }
+          break;
+          case "vote":
+            {
+              if (JSON.parse(event.data).role == "怪盗") {
+                this.resultOutsideCards = JSON.parse(event.data).outsideCards;
+              }
+              console.log(this.resultOutsideCards)
+              console.log(JSON.parse(event.data).outsideCards)
+              let votedUser = JSON.parse(event.data).votedUser;
+              this.outsideCards.forEach(card => {
+                if (card.name == votedUser) {
+                  card.votedNum++;
+                  this.outsideCards.splice(card.num, 1, card);
+                }
+              });
+              this.votedCounter++;
+              if (this.votedCounter >= this.users.length) {
+                this.status = 'resultAnnouncement';
+                // 勝敗を決める
+                let maxNum = Math.max(...this.outsideCards.map((card) => card.votedNum));
+                let victims = this.outsideCards.filter(card => card.votedNum == maxNum);
+                console.log(victims);
+                victims.forEach(victim => {
+                  this.messages.push(victim.name + "が処刑されました");
+                });
+                if (victims.filter(victim => victim.role == "人狼").length > 0) {
+                  this.messages.push("人狼を処刑したので村人陣営の勝利です");
+                } else {
+                  this.messages.push("村人陣営のユーザが処刑されたので人狼陣営の勝利です");
+                }
+                // すべて表にする
+              }
+            }
+
           break;
         default:
           console.log(JSON.parse(event.data));

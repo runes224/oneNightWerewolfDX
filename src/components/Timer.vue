@@ -1,8 +1,6 @@
 <template>
-  <div id="timer">
-    <div class="timer" style="display: flex;">
-      <div class="time">{{ msg }}</div><div v-if="!startVotingFlag">残り時間：{{ formatTime }}</div>
-    </div>
+  <div class="timer">
+    <div class="time" v-html="msg"></div><div v-if="!startVotingFlag">残り時間：{{ formatTime }}</div>
   </div>
 </template>
 
@@ -29,7 +27,7 @@ export default {
         if (this.doneNightActionFlag == true) {
           clearTimeout(this.timerObj);
           this.startVotingFlag = true;
-          this.msg = "議論の時間が終わりました。投票をしてください。";
+          this.msg = "議論の時間が終わりました。<br>投票をしてください。";
           this.$emit('startVoting');
           return false;
         }
@@ -81,10 +79,10 @@ export default {
 </script>
 
 <style scoped>
-#timer {
-  display: flex;
-  align-items: center;
+.timer {
   justify-content: center;
+  display: flex;
+  flex-direction: column;
 }
 .time {
   font-size: 1rem;
