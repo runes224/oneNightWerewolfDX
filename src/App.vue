@@ -159,7 +159,7 @@ export default {
     },
     otherUsers() {
       return this.users.filter(user => user !== this.name);
-    },
+    }
   },
   methods: {
     registerName() {
@@ -199,28 +199,37 @@ export default {
       }
       this.doneNightActionFlag = true;
     },
-    nightActionOutside(card) {
+    nightActionOutside(choicedCard) {
       if (this.doneNightActionFlag) {
         return;
       }
       if (this.role == "占い師") {
-        card.design = card.role;
-        this.outsideCards.splice(card.num, 1, card);
-        this.messages.push(card.name + "さんのカードは" + card.role + "でした");
-      } else if (this.role == "怪盗") {
-        card.design = card.role;
-        const myCardArray = this.outsideCards.filter(
-          card => card.name === this.name
-        );
-        const myCard = myCardArray[0];
-        this.role = card.role;
-        myCard.name = card.name;
-        card.name = this.name;
-        this.outsideCards.splice(myCard.num, 1, card);
-        this.outsideCards.splice(card.num, 1, myCard);
+        choicedCard.design = choicedCard.role;
+        this.outsideCards.splice(choicedCard.num, 1, choicedCard);
+        this.messages = [];
         this.messages.push(
-          myCard.name + "さんのカード（" + card.role + "）と交換しました"
+          choicedCard.name + "さんのカードは" + choicedCard.role + "でした"
         );
+      } else if (this.role == "怪盗") {
+        choicedCard.design = choicedCard.role;
+        const myCard = this.outsideCards.filter(
+          outsideCard => outsideCard.name === this.name
+        )[0];
+        this.role = choicedCard.role;
+        myCard.name = choicedCard.name;
+        choicedCard.name = this.name;
+        const myCardNum = myCard.num;
+        const choicedCardNum = choicedCard.num;
+        myCard.num = choicedCardNum;
+        choicedCard.num = myCardNum;
+        this.outsideCards.splice(myCardNum, 1, choicedCard);
+        this.outsideCards.splice(choicedCardNum, 1, myCard);
+        this.messages = [];
+        this.messages.push(
+          myCard.name + "さんのカード（" + choicedCard.role + "）と交換しました"
+        );
+        console.log("夜の行動後");
+        console.log(this.outsideCards);
       }
       this.doneNightActionFlag = true;
     },
@@ -274,9 +283,21 @@ export default {
             Object.entries(receivedRoles).map(([key, value]) => {
               let obj = {};
               if (key == this.name) {
-                obj = { name: key, role: value, design: value, num: i , votedNum: 0};
+                obj = {
+                  name: key,
+                  role: value,
+                  design: value,
+                  num: i,
+                  votedNum: 0
+                };
               } else {
-                obj = { name: key, role: value, design: "back", num: i , votedNum: 0};
+                obj = {
+                  name: key,
+                  role: value,
+                  design: "back",
+                  num: i,
+                  votedNum: 0
+                };
               }
               if (obj.name.match(/^notAssigned/)) {
                 this.insideCards.push(obj);
@@ -299,38 +320,51 @@ export default {
             // this.nightPeriodSecond = 20;
           }
           break;
-          case "vote":
-            {
-              if (JSON.parse(event.data).role == "怪盗") {
-                this.resultOutsideCards = JSON.parse(event.data).outsideCards;
-              }
-              console.log(this.resultOutsideCards)
-              console.log(JSON.parse(event.data).outsideCards)
-              let votedUser = JSON.parse(event.data).votedUser;
-              this.outsideCards.forEach(card => {
-                if (card.name == votedUser) {
-                  card.votedNum++;
-                  this.outsideCards.splice(card.num, 1, card);
-                }
-              });
-              this.votedCounter++;
-              if (this.votedCounter >= this.users.length) {
-                this.status = 'resultAnnouncement';
-                // 勝敗を決める
-                let maxNum = Math.max(...this.outsideCards.map((card) => card.votedNum));
-                let victims = this.outsideCards.filter(card => card.votedNum == maxNum);
-                console.log(victims);
-                victims.forEach(victim => {
-                  this.messages.push(victim.name + "が処刑されました");
-                });
-                if (victims.filter(victim => victim.role == "人狼").length > 0) {
-                  this.messages.push("人狼を処刑したので村人陣営の勝利です");
-                } else {
-                  this.messages.push("村人陣営のユーザが処刑されたので人狼陣営の勝利です");
-                }
-                // すべて表にする
-              }
+        case "vote":
+          {
+            if (JSON.parse(event.data).role == "怪盗") {
+              this.resultOutsideCards = JSON.parse(event.data).outsideCards;
             }
+            let votedUser = JSON.parse(event.data).votedUser;
+            this.outsideCards.forEach(card => {
+              if (card.name == votedUser) {
+                card.votedNum++;
+                this.outsideCards.splice(card.num, 1, card);
+              }
+            });
+            this.votedCounter++;
+            console.log(this.votedCounter);
+            if (this.votedCounter >= this.users.length) {
+              this.status = "resultAnnouncement";
+              // 勝敗を決める
+              let maxNum = Math.max(
+                ...this.outsideCards.map(card => card.votedNum)
+              );
+              let victims = this.outsideCards.filter(
+                card => card.votedNum == maxNum
+              );
+              this.messages = [];
+              victims.forEach(victim => {
+                this.messages.push(victim.name + "が処刑されました");
+              });
+              if (victims.filter(victim => victim.role == "人狼").length > 0) {
+                this.messages.push("人狼を処刑したので村人陣営の勝利です");
+              } else {
+                this.messages.push(
+                  "村人陣営のユーザが処刑されたので人狼陣営の勝利です"
+                );
+              }
+              for (let index = 0; index < 2; index++) {
+                let card = this.insideCards[index];
+                card.design = card.role;
+                this.insideCards.splice(index, 1, card);
+              }
+              this.outsideCards.forEach(card => {
+                card.design = card.role;
+                this.outsideCards.splice(card.num, 1, card);
+              });
+            }
+          }
 
           break;
         default:
