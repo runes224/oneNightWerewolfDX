@@ -15,7 +15,7 @@
         <button v-if="!isConnected" @click="connect">接続</button>
         <div v-if="isConnected">
           <div v-show="!nameFlag" class="register-name">
-            <register @chileEvent="registerName"></register>
+            <register :users="this.users" @chileEvent="registerName"></register>
           </div>
           <div v-if="status == 'start'">
             <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role>
