@@ -284,8 +284,8 @@ export default {
               });
             }
             this.status = "morning";
-            this.nightPeriodSecond = 5;
-            // this.nightPeriodSecond = 20;
+            // this.nightPeriodSecond = 5;
+            this.nightPeriodSecond = 20;
           }
           break;
         case "vote":

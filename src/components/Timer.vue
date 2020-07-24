@@ -31,8 +31,8 @@ export default {
           this.$emit('startVoting');
           return false;
         }
-        // this.min = 5;
-        this.sec = 5;
+        this.min = 5;
+        // this.sec = 5;
         this.msg = "夜が明けました。議論を始めてください。";
         this.doneNightActionFlag = true;
       } else {
