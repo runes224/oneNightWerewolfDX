@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <!-- header -->
     <div>
       <v-app-bar color="gray accent-4" dark>
         <v-toolbar-title>ワンナイト人狼DX</v-toolbar-title>
@@ -19,18 +18,7 @@
             <register @chileEvent="registerName"></register>
           </div>
           <div v-if="status == 'start'">
-            <div class="margin_1">残り{{remainCounter}}枚、役職を増やしてください。</div>
-            <div class="counter-area" v-for="role in roles" v-bind:key="role.name">
-              <div class="role-name">{{role.name}}：</div>
-              <number-input-spinner
-                :min="0"
-                :max="10"
-                :step="1"
-                :integerOnly="true"
-                v-model="role.number"
-              ></number-input-spinner>
-            </div>
-            <v-btn color="primary" @click="startGame" class="margin_1">ゲーム開始</v-btn>
+            <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role>
           </div>
           <div v-if="status != 'start' && nameFlag" class="direction-column">
             <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
@@ -81,7 +69,10 @@
               >
                 <div class="card" :class="card.design"></div>
                 {{card.name}}
-                <span v-if="status == 'resultAnnouncement'" style="color: black;">投票数：{{card.votedNum}}</span>
+                <span
+                  v-if="status == 'resultAnnouncement'"
+                  style="color: black; font-weight: initial;"
+                >投票数：{{card.votedNum}}</span>
               </div>
             </div>
           </div>
@@ -101,11 +92,13 @@
 <script>
 import Timer from "./components/Timer.vue";
 import Register from "./components/RegisterNameForm.vue";
+import ChoiceRole from "./components/ChoiceRole.vue";
 
 export default {
   components: {
     Timer,
-    register: Register
+    Register,
+    ChoiceRole
   },
   name: "App",
   data() {
@@ -126,34 +119,12 @@ export default {
       insideCards: [],
       outsideCards: [],
       resultOutsideCards: [],
-      roles: [
-        { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
-        { name: "人狼", number: 2, description: "村人を欺きましょう" },
-        {
-          name: "占い師",
-          number: 1,
-          description: "誰かのカードか余ったカードを確認できます"
-        },
-        { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
-        {
-          name: "軍人",
-          number: 0,
-          description: "村人よりちょっとだけ強いです"
-        },
-        { name: "狂人", number: 0, description: "人狼の勝利があなたの勝利です" }
-      ]
+      roles: []
     };
   },
   computed: {
     isConnected() {
       return this.ws !== null;
-    },
-    remainCounter() {
-      let roleCount = 0;
-      for (var role of this.roles) {
-        roleCount = roleCount + role.number;
-      }
-      return this.users.length - roleCount + 2;
     },
     otherUsers() {
       return this.users.filter(user => user !== this.yourName);
@@ -162,15 +133,12 @@ export default {
   methods: {
     isMyCard(name) {
       if (this.yourName === name) {
-        return 'myCard'
+        return "myCard";
       }
-      return ''
+      return "";
     },
     registerName(name) {
-      console.log(name);
       this.yourName = name;
-      console.log('this.yourName')
-      console.log(this.yourName)
       const data = {
         action: "registerName",
         data: this.yourName
@@ -179,7 +147,8 @@ export default {
       this.status = "start";
       this.connection.send(JSON.stringify(data));
     },
-    startGame() {
+    startGame(choicedRoles) {
+      this.roles = choicedRoles;
       const data = {
         action: "startGame",
         roles: this.roles,
@@ -217,7 +186,6 @@ export default {
         const myCard = this.outsideCards.filter(
           outsideCard => outsideCard.name === this.yourName
         )[0];
-        this.role = choicedCard.role;
         myCard.name = choicedCard.name;
         choicedCard.name = this.yourName;
         const myCardNum = myCard.num;
@@ -333,9 +301,7 @@ export default {
               }
             });
             this.votedCounter++;
-            console.log(this.votedCounter);
             if (this.votedCounter >= this.users.length) {
-              this.status = "resultAnnouncement";
               // 勝敗を決める
               let maxNum = Math.max(
                 ...this.outsideCards.map(card => card.votedNum)
@@ -360,9 +326,17 @@ export default {
                 this.insideCards.splice(index, 1, card);
               }
               this.outsideCards.forEach(card => {
-                card.design = card.role;
+                if (this.resultOutsideCards.length > 0) {
+                  let resultCard = this.resultOutsideCards.filter(
+                    resultCard => resultCard.name === card.name
+                  )[0];
+                  card.design = resultCard.role;
+                } else {
+                  card.design = card.role;
+                }
                 this.outsideCards.splice(card.num, 1, card);
               });
+              this.status = "resultAnnouncement";
             }
           }
 
@@ -391,7 +365,8 @@ export default {
 }
 
 .myCard {
-  color: #f6bfbc;
+  color: red;
+  font-weight: bold;
 }
 
 .kakomi {
@@ -464,21 +439,5 @@ input {
 .direction-column {
   display: flex;
   flex-direction: column;
-}
-
-.counter-area {
-  display: flex;
-  justify-content: center;
-  margin-top: 2px;
-  margin-bottom: 2px;
-}
-
-.role-name {
-  width: 5rem;
-  line-height: 2.5rem;
-}
-
-.margin_1 {
-  margin: 1rem 1rem;
 }
 </style>

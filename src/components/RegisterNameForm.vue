@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: "register",
+  name: "choiceRole",
   data() {
     return {
       name: '',
