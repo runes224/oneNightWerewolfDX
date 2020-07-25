@@ -3,5 +3,5 @@ module.exports = {
     "vuetify"
   ],
   publicPath: '/oneNightWerewolfDX/',
-  outputDir: 'docs'
+  outputDir: 'dist'
 }
