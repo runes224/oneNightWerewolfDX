@@ -105,6 +105,7 @@ export default {
     return {
       yourName: "",
       role: "",
+      gameMasterFlag: false,
       nameFlag: false,
       inputMessage: "",
       connection: null,
@@ -138,10 +139,12 @@ export default {
       return "";
     },
     registerName(name) {
-      this.yourName = name;
+      this.yourName = name[0];
+      this.gameMasterFlag = name[1];
       const data = {
         action: "registerName",
-        data: this.yourName
+        name: this.yourName,
+        gameMasterFlag: this.gameMasterFlag
       };
       this.nameFlag = true;
       this.status = "start";
@@ -224,19 +227,20 @@ export default {
     );
 
     this.connection.onmessage = event => {
-      switch (JSON.parse(event.data).type) {
+      const receivedData = JSON.parse(event.data);
+      switch (receivedData.type) {
         case "join":
           this.messages.push(
-            JSON.parse(event.data).message + "が入室しました。"
+            receivedData.name + "が入室しました。"
           );
-          this.users.push(JSON.parse(event.data).message);
+          this.users.push(receivedData.name);
           break;
         case "message":
-          this.messages.push(JSON.parse(event.data).message);
+          this.messages.push(receivedData.message);
           break;
         case "roles":
           {
-            let receivedRoles = JSON.parse(event.data).userRoles;
+            let receivedRoles = receivedData.userRoles;
             this.role = receivedRoles[this.yourName];
             this.messages = [];
             this.messages.push("あなたの役職は" + this.role + "です。");
@@ -290,10 +294,10 @@ export default {
           break;
         case "vote":
           {
-            if (JSON.parse(event.data).role == "怪盗") {
-              this.resultOutsideCards = JSON.parse(event.data).outsideCards;
+            if (receivedData.role == "怪盗") {
+              this.resultOutsideCards = receivedData.outsideCards;
             }
-            let votedUser = JSON.parse(event.data).votedUser;
+            let votedUser = receivedData.votedUser;
             this.outsideCards.forEach(card => {
               if (card.name == votedUser) {
                 card.votedNum++;
@@ -342,7 +346,7 @@ export default {
 
           break;
         default:
-          console.log(JSON.parse(event.data));
+          console.log(receivedData);
           this.messages.push("予期せぬデータを受信しました");
       }
     };
