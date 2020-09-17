@@ -5,8 +5,8 @@
         <v-toolbar-title>ワンナイト人狼DX</v-toolbar-title>
         <v-spacer></v-spacer>
         <div v-if="nameFlag" style="display: inline-flex; padding-bottom: 0;">
-          <p>ログインユーザ：</p>
-          <p>{{users.length}}人</p>
+          <p>ルームID：</p>
+          <p>{{this.roomId}}</p>
         </div>
       </v-app-bar>
     </div>
@@ -17,8 +17,12 @@
           <div v-show="!nameFlag" class="register-name">
             <register :users="this.users" @chileEvent="registerName"></register>
           </div>
-          <div v-if="status == 'start'">
+          <div v-if="status === 'start' && this.gameMasterFlag === true">
             <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role>
+          </div>
+          <div v-if="status === 'start' && this.gameMasterFlag === false">
+            <span>ゲームマスターが操作中です。</span><br>
+            <span>しばらくお待ち下さい。</span>
           </div>
           <div v-if="status != 'start' && nameFlag" class="direction-column">
             <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
@@ -106,6 +110,7 @@ export default {
       yourName: "",
       role: "",
       gameMasterFlag: false,
+      roomId: 0,
       nameFlag: false,
       inputMessage: "",
       connection: null,
@@ -138,13 +143,15 @@ export default {
       }
       return "";
     },
-    registerName(name) {
-      this.yourName = name[0];
-      this.gameMasterFlag = name[1];
+    registerName(childData) {
+      this.yourName = childData[0];
+      this.gameMasterFlag = childData[1];
+      this.roomId = childData[2];
       const data = {
         action: "registerName",
         name: this.yourName,
-        gameMasterFlag: this.gameMasterFlag
+        gameMasterFlag: this.gameMasterFlag,
+        roomId: this.roomId
       };
       this.nameFlag = true;
       this.status = "start";
@@ -228,13 +235,27 @@ export default {
 
     this.connection.onmessage = event => {
       const receivedData = JSON.parse(event.data);
+      console.log(receivedData)
       switch (receivedData.type) {
         case "join":
-          this.messages.push(
-            receivedData.name + "が入室しました。"
-          );
-          this.users.push(receivedData.name);
-          break;
+          {
+            const joinMember = receivedData.member;
+            if (joinMember.notExistRoomFlag === true && joinMember.name === this.yourName) {
+              this.messages.push("指定したルームID(" + this.roomId + ")の部屋が存在しません。もう一度接続し直してください。");
+            } else if (this.gameMasterFlag === true && joinMember.name === this.yourName) {
+              this.messages.push("部屋を作成しました。");
+              this.messages.push("ルームIDは" + joinMember.roomId + "です。");
+              this.roomId = joinMember.roomId;
+            } else {
+              this.messages.push(joinMember.name + "が入室しました。");
+            }
+            console.log(receivedData.room.users);
+            console.log(receivedData.room);
+            const receivedUsers = receivedData.room.users.map(user => user.name);
+            console.log(receivedUsers);
+            this.users.push(joinMember.name);
+            break;
+          }
         case "message":
           this.messages.push(receivedData.message);
           break;
