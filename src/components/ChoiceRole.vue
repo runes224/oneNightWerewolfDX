@@ -53,7 +53,7 @@ export default {
   },
   methods: {
     startGame: function() {
-      // this.roles = choicedRoles;
+      this.$store.dispatch('modules/setRoles', this.roles);
       const sendData = {
         action: "startGame",
         roles: this.roles,

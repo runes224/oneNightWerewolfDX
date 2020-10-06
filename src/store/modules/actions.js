@@ -7,5 +7,8 @@ export const actions = {
   },
   setRoomId({commit}, roomId) {
     commit('setRoomId', roomId);
+  },
+  setRoles({commit}, arr) {
+    commit('setRoles', arr);
   }
 }
