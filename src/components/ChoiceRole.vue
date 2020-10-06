@@ -44,7 +44,13 @@ export default {
   },
   methods: {
     startGame: function() {
-      this.$emit("childEvent", this.roles);
+      // this.roles = choicedRoles;
+      const sendData = {
+        action: "startGame",
+        roles: this.roles,
+        users: this.users
+      };
+      this.$websocket.connection.send(JSON.stringify(sendData));
     }
   }
 };

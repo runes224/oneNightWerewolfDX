@@ -1,25 +1,13 @@
 <template>
   <v-app>
-    <div>
-      <v-app-bar color="gray accent-4" dark>
-        <v-toolbar-title>ワンナイト人狼DX</v-toolbar-title>
-        <v-spacer></v-spacer>
-        <div v-if="nameFlag" style="display: inline-flex; padding-bottom: 0;">
-          <p>ルームID：</p>
-          <p>{{this.roomId}}</p>
-        </div>
-      </v-app-bar>
-    </div>
+    <AppHeader :registerRoomIdFlag="nameFlag" :roomId="Number(roomId)"></AppHeader>
     <v-container>
       <div id="app">
         <button v-if="!isConnected" @click="connect">接続</button>
         <div v-if="isConnected">
-          <div v-show="!nameFlag" class="register-name">
-            <register :users="this.users" @chileEvent="registerName"></register>
-          </div>
-          <div v-if="status === 'start' && this.gameMasterFlag === true">
-            <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role>
-          </div>
+          <router-view></router-view>
+          <!-- <register :users="this.users" @chileEvent="registerName"></register>
+          <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role> -->
           <div v-if="status === 'start' && this.gameMasterFlag === false">
             <span>ゲームマスターが操作中です。</span><br>
             <span>しばらくお待ち下さい。</span>
@@ -95,14 +83,12 @@
 
 <script>
 import Timer from "./components/Timer.vue";
-import Register from "./components/RegisterNameForm.vue";
-import ChoiceRole from "./components/ChoiceRole.vue";
+import AppHeader from "./components/AppHeader.vue";
 
 export default {
   components: {
+    AppHeader,
     Timer,
-    Register,
-    ChoiceRole
   },
   name: "App",
   data() {
@@ -113,7 +99,6 @@ export default {
       roomId: 0,
       nameFlag: false,
       inputMessage: "",
-      connection: null,
       status: "",
       doneNightActionFlag: false,
       dialog: false,
@@ -130,7 +115,7 @@ export default {
   },
   computed: {
     isConnected() {
-      return this.ws !== null;
+      return this.$websocket.connection !== null;
     },
     otherUsers() {
       return this.users.filter(user => user !== this.yourName);
@@ -142,30 +127,6 @@ export default {
         return "myCard";
       }
       return "";
-    },
-    registerName(childData) {
-      this.yourName = childData[0];
-      this.gameMasterFlag = childData[1];
-      this.roomId = childData[2];
-      const data = {
-        action: "registerName",
-        name: this.yourName,
-        gameMasterFlag: this.gameMasterFlag,
-        roomId: this.roomId
-      };
-      this.nameFlag = true;
-      this.status = "start";
-      this.connection.send(JSON.stringify(data));
-    },
-    startGame(choicedRoles) {
-      this.roles = choicedRoles;
-      const data = {
-        action: "startGame",
-        roles: this.roles,
-        users: this.users
-      };
-
-      this.connection.send(JSON.stringify(data));
     },
     nightActionInside() {
       if (this.role == "占い師" && this.doneNightActionFlag == false) {
@@ -224,16 +185,11 @@ export default {
         outsideCards: this.outsideCards
       };
 
-      this.connection.send(JSON.stringify(data));
+      this.$websocket.connection.send(JSON.stringify(data));
     }
   },
   created() {
-    console.log("Starting connection to WebSocket Server");
-    this.connection = new WebSocket(
-      "wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod"
-    );
-
-    this.connection.onmessage = event => {
+    this.$websocket.connection.onmessage = event => {
       const receivedData = JSON.parse(event.data);
       console.log(receivedData)
       switch (receivedData.type) {
@@ -245,15 +201,11 @@ export default {
             } else if (this.gameMasterFlag === true && joinMember.name === this.yourName) {
               this.messages.push("部屋を作成しました。");
               this.messages.push("ルームIDは" + joinMember.roomId + "です。");
-              this.roomId = joinMember.roomId;
+              this.$store.dispatch('setRoomId', joinMember.roomId)
             } else {
               this.messages.push(joinMember.name + "が入室しました。");
             }
-            console.log(receivedData.room.users);
-            console.log(receivedData.room);
-            const receivedUsers = receivedData.room.users.map(user => user.name);
-            console.log(receivedUsers);
-            this.users.push(joinMember.name);
+            this.$store.dispatch('addUser', joinMember.name)
             break;
           }
         case "message":
@@ -372,7 +324,7 @@ export default {
       }
     };
 
-    this.connection.onopen = event => {
+    this.$websocket.connection.onopen = event => {
       console.log(event);
       console.log("Successfully connected to the echo websocket server...");
     };

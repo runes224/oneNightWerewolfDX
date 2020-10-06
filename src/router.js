@@ -14,7 +14,7 @@ export default new Router({
       component: RegisterNameForm
     },
     {
-      path: '/choiceRole/:usersCount',
+      path: '/choiceRole',
       name: 'choiceRole',
       component: ChoiceRole,
       props: true
