@@ -4,5 +4,8 @@ export const getters = {
   },
   getUsersNumber(state) {
     return state.users.length;
+  },
+  isGameMaster(state) {
+    return state.gameMasterFlag;
   }
 }
