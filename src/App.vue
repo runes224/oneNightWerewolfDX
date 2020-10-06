@@ -6,12 +6,6 @@
         <button v-if="!isConnected" @click="connect">接続</button>
         <div v-if="isConnected">
           <router-view></router-view>
-          <!-- <register :users="this.users" @chileEvent="registerName"></register>
-          <choice-role :usersCount="this.users.length" @childEvent="startGame"></choice-role> -->
-          <div v-if="status === 'start' && this.gameMasterFlag === false">
-            <span>ゲームマスターが操作中です。</span><br>
-            <span>しばらくお待ち下さい。</span>
-          </div>
           <div v-if="status != 'start' && nameFlag" class="direction-column">
             <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
             <v-row justify="center" v-if="status == 'voting'">
@@ -201,11 +195,11 @@ export default {
             } else if (this.gameMasterFlag === true && joinMember.name === this.yourName) {
               this.messages.push("部屋を作成しました。");
               this.messages.push("ルームIDは" + joinMember.roomId + "です。");
-              this.$store.dispatch('setRoomId', joinMember.roomId)
+              this.$store.dispatch('modules/setRoomId', joinMember.roomId)
             } else {
               this.messages.push(joinMember.name + "が入室しました。");
             }
-            this.$store.dispatch('addUser', joinMember.name)
+            this.$store.dispatch('modules/addUser', joinMember.name)
             break;
           }
         case "message":

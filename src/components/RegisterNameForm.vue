@@ -38,7 +38,7 @@ export default {
         roomId: this.roomId
       };
       this.$websocket.connection.send(JSON.stringify(sendData));
-      this.$store.dispatch('modules/addUser', this.name);
+      this.$store.dispatch('modules/registerName', { name: this.name, gameMasterFlag: this.createNewRoomFlag });
       this.$router.push('/choiceRole');
     }
   },

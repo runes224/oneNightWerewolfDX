@@ -1,18 +1,23 @@
-yarn add vue-router --dev<template>
+<template>
   <div>
-    <div class="margin_1">残り{{remainCounter}}枚、役職を増やしてください。</div>
-    <div class="counter-area" v-for="role in roles" v-bind:key="role.name">
-      <div class="role-name">{{role.name}}：</div>
-      <number-input-spinner :min="0" :max="10" :step="1" :integerOnly="true" v-model="role.number"></number-input-spinner>
+    <div v-if="isGameMaster">
+      <div class="margin_1">残り{{remainCounter}}枚、役職を増やしてください。</div>
+      <div class="counter-area" v-for="role in roles" v-bind:key="role.name">
+        <div class="role-name">{{role.name}}：</div>
+        <number-input-spinner :min="0" :max="10" :step="1" :integerOnly="true" v-model="role.number"></number-input-spinner>
+      </div>
+      <v-btn color="primary" @click="startGame" class="margin_1">ゲーム開始</v-btn>
     </div>
-    <v-btn color="primary" @click="startGame" class="margin_1">ゲーム開始</v-btn>
+    <div v-if="!isGameMaster">
+      <span>ゲームマスターが操作中です。</span><br>
+      <span>しばらくお待ち下さい。</span>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
   name: "choise",
-  props: ['usersCount'],
   data() {
     return {
       roles: [
@@ -39,7 +44,11 @@ export default {
       for (var role of this.roles) {
         roleCount = roleCount + role.number;
       }
-      return this.usersCount - roleCount + 2;
+      const usersCount = this.$store.getters['modules/getUsersNumber'];
+      return usersCount - roleCount + 2;
+    },
+    isGameMaster() {
+      return this.$store.getters['modules/isGameMaster'];
     }
   },
   methods: {
@@ -48,12 +57,12 @@ export default {
       const sendData = {
         action: "startGame",
         roles: this.roles,
-        users: this.users
+        users: this.$store.getters['modules/users']
       };
       this.$websocket.connection.send(JSON.stringify(sendData));
     }
   }
-};
+}
 </script>
 
 <style scoped>
