@@ -60,6 +60,7 @@ export default {
         users: this.$store.getters['modules/users']
       };
       this.$websocket.connection.send(JSON.stringify(sendData));
+      this.$router.push('/playingGame');
     }
   }
 }

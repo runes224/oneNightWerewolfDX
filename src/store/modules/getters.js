@@ -5,6 +5,9 @@ export const getters = {
   roles(state) {
     return state.roles;
   },
+  roomId(state) {
+    return state.roomId;
+  },
   getUsersNumber(state) {
     return state.users.length;
   },
