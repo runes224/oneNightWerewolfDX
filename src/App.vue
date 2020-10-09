@@ -9,16 +9,19 @@
         </div>
       </div>
     </v-container>
+    <MessageBox :messages="messages"></MessageBox>
   </v-app>
 </template>
 
 <script>
 import AppHeader from "./components/AppHeader.vue";
+import MessageBox from "./components/MessageBox.vue";
 
 export default {
   name: "App",
   components: {
     AppHeader,
+    MessageBox,
   },
   computed: {
     isConnected() {
@@ -26,6 +29,9 @@ export default {
     },
     roomId() {
       return this.$store.getters['modules/roomId'];
+    },
+    messages() {
+      return this.$store.getters['modules/messages'];
     }
 
   }

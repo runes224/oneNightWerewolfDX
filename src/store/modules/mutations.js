@@ -11,5 +11,11 @@ export const mutations = {
   },
   setRoles(state, arr) {
     state.roles = arr;
+  },
+  addMessage(state, msg) {
+    state.messages.push(msg);
+  },
+  clearMessages(state) {
+    state.messages = [];
   }
 }

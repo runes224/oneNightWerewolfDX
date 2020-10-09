@@ -9,6 +9,12 @@ export const actions = {
     commit('setRoomId', roomId);
   },
   setRoles({commit}, arr) {
-    commit('setRoles', arr);
+    commit('setRoles', arr)
+  },
+  addMessage({commit}, arr) {
+    commit('addMessage', arr);
+  },
+  clearMessages({commit}) {
+    commit('clearMessages');
   }
 }

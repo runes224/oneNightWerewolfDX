@@ -56,13 +56,6 @@
       </div>
     </div>
   </div>
-  <!-- メッセージエリア -->
-  <!-- <div v-if="nameFlag" class="kakomi">
-    <ul style="list-style: none" v-for="message in messages" v-bind:key="message">
-      <li>{{message}}</li>
-      <v-divider></v-divider>
-    </ul>
-  </div> -->
 </template>
 
 <script>
@@ -113,7 +106,7 @@ export default {
           let card = this.insideCards[index];
           card.design = card.role;
           this.insideCards.splice(index, 1, card);
-          this.messages.push(
+          this.addMessage(
             "中央の伏せカード" + (index + 1) + ":" + card.role
           );
         }
@@ -127,8 +120,8 @@ export default {
       if (this.role == "占い師") {
         choicedCard.design = choicedCard.role;
         this.outsideCards.splice(choicedCard.num, 1, choicedCard);
-        this.messages = [];
-        this.messages.push(
+        this.clearMessages();
+        this.addMessage(
           choicedCard.name + "さんのカードは" + choicedCard.role + "でした"
         );
       } else if (this.role == "怪盗") {
@@ -144,8 +137,8 @@ export default {
         choicedCard.num = myCardNum;
         this.outsideCards.splice(myCardNum, 1, choicedCard);
         this.outsideCards.splice(choicedCardNum, 1, myCard);
-        this.messages = [];
-        this.messages.push(
+        this.clearMessages();
+        this.addMessage(
           myCard.name + "さんのカード（" + choicedCard.role + "）と交換しました"
         );
       }
@@ -167,6 +160,12 @@ export default {
       this.$websocket.connection.send(JSON.stringify(data));
     }
   },
+  addMessage(message) {
+    this.$store.dispatch('modules/addMessage', message);
+  },
+  clearMessages() {
+    this.$store.dispatch('modules/clearMessages');
+  },
   created() {
     this.$websocket.connection.onmessage = event => {
       const receivedData = JSON.parse(event.data);
@@ -176,29 +175,29 @@ export default {
           {
             const joinMember = receivedData.member;
             if (joinMember.notExistRoomFlag === true && joinMember.name === this.yourName) {
-              this.messages.push("指定したルームID(" + this.roomId + ")の部屋が存在しません。もう一度接続し直してください。");
+              this.addMessage("指定したルームID(" + this.roomId + ")の部屋が存在しません。もう一度接続し直してください。");
             } else if (this.gameMasterFlag === true && joinMember.name === this.yourName) {
-              this.messages.push("部屋を作成しました。");
-              this.messages.push("ルームIDは" + joinMember.roomId + "です。");
+              this.addMessage("部屋を作成しました。");
+              this.addMessage("ルームIDは" + joinMember.roomId + "です。");
               this.$store.dispatch('modules/setRoomId', joinMember.roomId)
             } else {
-              this.messages.push(joinMember.name + "が入室しました。");
+              this.addMessage(joinMember.name + "が入室しました。");
             }
             this.$store.dispatch('modules/addUser', joinMember.name)
             break;
           }
         case "message":
-          this.messages.push(receivedData.message);
+          this.addMessage(receivedData.message);
           break;
         case "roles":
           {
             let receivedRoles = receivedData.userRoles;
             this.role = receivedRoles[this.yourName];
-            this.messages = [];
-            this.messages.push("あなたの役職は" + this.role + "です。");
+            this.clearMessages();
+            this.addMessage("あなたの役職は" + this.role + "です。");
             this.roles.forEach(role => {
               if (role.name === this.role) {
-                this.messages.push(role.description);
+                this.addMessage(role.description);
               }
             });
 
@@ -235,7 +234,7 @@ export default {
                 if (card.role === "人狼" && card.name !== this.yourName) {
                   card.design = card.role;
                   this.outsideCards.splice(card.num, 1, card);
-                  this.messages.push(card.name + "さんも人狼です");
+                  this.addMessage(card.name + "さんも人狼です");
                 }
               });
             }
@@ -265,14 +264,14 @@ export default {
               let victims = this.outsideCards.filter(
                 card => card.votedNum == maxNum
               );
-              this.messages = [];
+              this.clearMessages();
               victims.forEach(victim => {
-                this.messages.push(victim.name + "が処刑されました");
+                this.addMessage(victim.name + "が処刑されました");
               });
               if (victims.filter(victim => victim.role == "人狼").length > 0) {
-                this.messages.push("人狼を処刑したので村人陣営の勝利です");
+                this.addMessage("人狼を処刑したので村人陣営の勝利です");
               } else {
-                this.messages.push(
+                this.addMessage(
                   "村人陣営のユーザが処刑されたので人狼陣営の勝利です"
                 );
               }
@@ -299,7 +298,7 @@ export default {
           break;
         default:
           console.log(receivedData);
-          this.messages.push("予期せぬデータを受信しました");
+          this.addMessage("予期せぬデータを受信しました");
       }
     };
 
@@ -323,16 +322,6 @@ export default {
 .myCard {
   color: red;
   font-weight: bold;
-}
-
-.kakomi {
-  padding: 1rem 1rem;
-  width: 90%; /*幅の調節*/
-  color: #777777; /* 文字色 */
-  background-color: #fff; /* 背景色 */
-  border: 4px solid #f6bfbc; /*線の太さ・色*/
-  border-radius: 3em 0.8em 3em 0.7em/0.9em 2em 0.8em 3em;
-  margin: 10px auto;
 }
 
 input {

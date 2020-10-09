@@ -3,5 +3,6 @@ export default {
   gameMasterFlag: false,
   roomId: 0,
   users: [],
-  roles: []
+  roles: [],
+  messages: []
 }
