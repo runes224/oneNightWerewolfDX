@@ -3,7 +3,7 @@ import App from './App.vue'
 import vuetify from './plugins/vuetify'
 import NumberInputSpinner from 'vue-number-input-spinner'
 import router from './router'
-import store from './store/store'
+import store from './stores/store'
 
 Vue.config.productionTip = false
 Vue.component('number-input-spinner', NumberInputSpinner);
