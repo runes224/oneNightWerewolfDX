@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     isConnected() {
-      return this.$websocket.connection !== null;
+      return this.$websocket !== null;
     },
     roomId() {
       return this.$store.getters['modules/roomId'];
@@ -33,7 +33,6 @@ export default {
     messages() {
       return this.$store.getters['modules/messages'];
     }
-
   }
 };
 </script>

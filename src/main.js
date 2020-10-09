@@ -4,14 +4,11 @@ import vuetify from './plugins/vuetify'
 import NumberInputSpinner from 'vue-number-input-spinner'
 import router from './router'
 import store from './stores/store'
+import Socket from './utils/socket'
 
 Vue.config.productionTip = false
 Vue.component('number-input-spinner', NumberInputSpinner);
-Vue.prototype.$websocket = {
-  connection: new WebSocket(
-    "wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod"
-  )
-};
+Vue.prototype.$websocket = Socket;
 
 new Vue({
   router,

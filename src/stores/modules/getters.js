@@ -1,4 +1,7 @@
 export const getters = {
+  myName(state) {
+    return state.myName;
+  },
   users(state) {
     return state.users;
   },

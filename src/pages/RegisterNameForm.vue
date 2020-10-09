@@ -37,7 +37,7 @@ export default {
         gameMasterFlag: this.createNewRoomFlag,
         roomId: this.roomId
       };
-      this.$websocket.connection.send(JSON.stringify(sendData));
+      this.$websocket.send(JSON.stringify(sendData));
       this.$store.dispatch('modules/registerName', { name: this.name, gameMasterFlag: this.createNewRoomFlag });
       this.$router.push('/choiceRole');
     }
