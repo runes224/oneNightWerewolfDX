@@ -56,19 +56,22 @@ const join = (receivedData) => {
 
 const roles = (receivedData) => {
   console.log(receivedData)
-  const myName = store.getters['modules/myName'];
   let receivedRoles = receivedData.userRoles;
-  this.role = receivedRoles[myName];
+  const myName = store.getters['modules/myName'];
+  const myRole = receivedRoles[myName];
+  const roles = store.getters['modules/roles'];
   clearMessages();
-  addMessage("あなたの役職は" + this.role + "です。");
-  this.roles.forEach(role => {
-    if (role.name === this.role) {
+  addMessage("あなたの役職は" + myRole + "です。");
+  roles.forEach(role => {
+    if (role.name === myRole) {
       addMessage(role.description);
     }
   });
 
   // カードを配る
   let i = 0;
+  let insideCards = [];
+  let outsideCards = [];
   Object.entries(receivedRoles).map(([key, value]) => {
     let obj = {};
     if (key == myName) {
@@ -89,23 +92,24 @@ const roles = (receivedData) => {
       };
     }
     if (obj.name.match(/^notAssigned/)) {
-      this.insideCards.push(obj);
+      insideCards.push(obj);
     } else {
-      this.outsideCards.push(obj);
+      outsideCards.push(obj);
     }
     i++;
   });
-  if (this.role == "人狼") {
-    this.outsideCards.forEach(card => {
+  if (myRole == "人狼") {
+    outsideCards.forEach(card => {
       if (card.role === "人狼" && card.name !== myName) {
         card.design = card.role;
-        this.outsideCards.splice(card.num, 1, card);
+        outsideCards.splice(card.num, 1, card);
         addMessage(card.name + "さんも人狼です");
       }
     });
   }
-  // this.nightPeriodSecond = 5;
-  this.nightPeriodSecond = 20;
+  store.dispatch('modules/setInsideCards', insideCards)
+  store.dispatch('modules/setOutsideCards', outsideCards)
+  store.dispatch('modules/setNightPeriodSecond', 20)
 }
 
 const vote = (receivedData) => {

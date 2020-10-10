@@ -11,8 +11,17 @@ export const getters = {
   messages(state) {
     return state.messages;
   },
+  insideCards(state) {
+    return state.insideCards;
+  },
+  outsideCards(state) {
+    return state.outsideCards;
+  },
   roomId(state) {
     return state.roomId;
+  },
+  nightPeriodSecond(state) {
+    return state.nightPeriodSecond;
   },
   getUsersNumber(state) {
     return state.users.length;

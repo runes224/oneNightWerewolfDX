@@ -1,6 +1,5 @@
 <template>
   <div class="direction-column">
-    <div>test</div>
     <Timer :seccond="nightPeriodSecond" @startVoting="startVotingParent"></Timer>
     <v-row justify="center" v-if="status == 'voting'">
       <v-dialog v-model="dialog" scrollable max-width="25rem">
@@ -80,7 +79,6 @@ export default {
       votedUser: "",
       votedCounter: 0,
       nightPeriodSecond: 0,
-      messages: [],
       users: [],
       insideCards: [],
       outsideCards: [],

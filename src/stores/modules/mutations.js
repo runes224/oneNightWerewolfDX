@@ -9,8 +9,17 @@ export const mutations = {
   setRoomId(state, roomId) {
     state.roomId = roomId;
   },
+  setNightPeriodSecond(state, num) {
+    state.nightPeriodSecond = num;
+  },
   setRoles(state, arr) {
     state.roles = arr;
+  },
+  setInsideCards(state, arr) {
+    state.insideCards = arr;
+  },
+  setOutsideCards(state, arr) {
+    state.outsideCards = arr;
   },
   addMessage(state, msg) {
     state.messages.push(msg);

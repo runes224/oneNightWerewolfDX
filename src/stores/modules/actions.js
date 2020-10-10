@@ -8,8 +8,17 @@ export const actions = {
   setRoomId({commit}, roomId) {
     commit('setRoomId', roomId);
   },
+  setNightPeriodSecond({commit}, num) {
+    commit('setNightPeriodSecond', num);
+  },
   setRoles({commit}, arr) {
     commit('setRoles', arr)
+  },
+  setInsideCards({commit}, arr) {
+    commit('setInsideCards', arr)
+  },
+  setOutsideCards({commit}, arr) {
+    commit('setOutsideCards', arr)
   },
   addMessage({commit}, arr) {
     commit('addMessage', arr);
