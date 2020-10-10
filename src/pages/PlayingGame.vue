@@ -1,7 +1,7 @@
 <template>
   <div class="direction-column">
-    <Timer :seccond="nightPeriodSecond"></Timer>
-    <VoteUser :otherUsers="otherUsers" :myRole="myRole"></VoteUser>
+    <Timer :seccond="nightPeriodSecond" @startVoting="startVoting()"></Timer>
+    <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole"></VoteUser>
     <div id="inside-cards">
       <div
         class="direction-column card-area"
@@ -47,6 +47,7 @@ export default {
       insideCards: store.getters["modules/insideCards"],
       outsideCards: store.getters["modules/outsideCards"],
       doneNightActionFlag: false,
+      startVotingFlag: false
     });
 
     const myName = store.getters["modules/myName"];
@@ -107,6 +108,11 @@ export default {
       state.doneNightActionFlag = true;
     };
 
+    const startVoting = () => {
+      console.log(startVoting);
+      state.startVotingFlag = true;
+    };
+
     const addMessage = (message) => {
       store.dispatch("modules/addMessage", message);
     };
@@ -123,6 +129,7 @@ export default {
       nightActionOutside,
       otherUsers,
       isMyCard,
+      startVoting,
     };
   },
 };
