@@ -2,6 +2,9 @@ export const getters = {
   myName(state) {
     return state.myName;
   },
+  myRole(state) {
+    return state.myRole;
+  },
   users(state) {
     return state.users;
   },

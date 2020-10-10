@@ -15,6 +15,9 @@ export const mutations = {
   setRoles(state, arr) {
     state.roles = arr;
   },
+  setMyRole(state, str) {
+    state.myRole = str;
+  },
   setInsideCards(state, arr) {
     state.insideCards = arr;
   },

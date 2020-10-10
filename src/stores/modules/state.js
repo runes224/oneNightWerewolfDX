@@ -1,5 +1,6 @@
 export default {
   myName: '',
+  myRole: '',
   gameMasterFlag: false,
   roomId: 0,
   nightPeriodSecond: 0,

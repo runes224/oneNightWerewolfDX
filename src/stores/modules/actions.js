@@ -5,6 +5,9 @@ export const actions = {
   registerName({commit}, obj) {
     commit('registerName', obj);
   },
+  setMyRole({commit}, str) {
+    commit('setMyRole', str);
+  },
   setRoomId({commit}, roomId) {
     commit('setRoomId', roomId);
   },

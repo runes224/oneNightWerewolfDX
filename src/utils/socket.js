@@ -1,5 +1,6 @@
 import Vue from "vue"
 import store from '../stores/store'
+import router from '../router'
 
 const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod")
 
@@ -55,7 +56,6 @@ const join = (receivedData) => {
 }
 
 const roles = (receivedData) => {
-  console.log(receivedData)
   let receivedRoles = receivedData.userRoles;
   const myName = store.getters['modules/myName'];
   const myRole = receivedRoles[myName];
@@ -107,9 +107,11 @@ const roles = (receivedData) => {
       }
     });
   }
-  store.dispatch('modules/setInsideCards', insideCards)
-  store.dispatch('modules/setOutsideCards', outsideCards)
-  store.dispatch('modules/setNightPeriodSecond', 20)
+  store.dispatch('modules/setMyRole', myRole);
+  store.dispatch('modules/setInsideCards', insideCards);
+  store.dispatch('modules/setOutsideCards', outsideCards);
+  store.dispatch('modules/setNightPeriodSecond', 20);
+  router.push('/playingGame');
 }
 
 const vote = (receivedData) => {
