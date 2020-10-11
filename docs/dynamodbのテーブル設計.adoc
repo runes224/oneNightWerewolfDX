@@ -1,0 +1,25 @@
+==== werewolf_users
+
+|===
+|userName|connectionId
+
+|String
+|String
+
+|===
+
+---
+
+==== werewolf_rooms
+
+|===
+|roomId|users
+
+|String
+|List
+
+|===
+
+===== users
+
+Map { connectionId: String, name: String }
