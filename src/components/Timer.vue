@@ -35,7 +35,6 @@ export default {
           return false;
         }
         this.min = this.dayPeriodMinute;
-        // this.sec = 5;
         this.msg = "夜が明けました。議論を始めてください。";
         this.doneNightActionFlag = true;
       } else {
