@@ -1,6 +1,6 @@
 <template>
   <div class="direction-column">
-    <Timer :seccond="nightPeriodSecond" @startVoting="startVoting()"></Timer>
+    <Timer :seccond="nightPeriodSecond" @start-voting="startVoting()"></Timer>
     <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole"></VoteUser>
     <div id="inside-cards">
       <div

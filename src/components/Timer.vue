@@ -28,7 +28,7 @@ export default {
           clearTimeout(this.timerObj);
           this.startVotingFlag = true;
           this.msg = "議論の時間が終わりました。<br>投票をしてください。";
-          this.$emit('startVoting');
+          this.$emit('start-voting');
           return false;
         }
         this.min = 5;
