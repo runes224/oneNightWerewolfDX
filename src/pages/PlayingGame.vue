@@ -1,6 +1,6 @@
 <template>
   <div class="direction-column">
-    <Timer :seccond="nightPeriodSecond" @start-voting="startVoting()"></Timer>
+    <Timer :nightPeriodSecond="Number(nightPeriodSecond)" :dayPeriodMinute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
     <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole"></VoteUser>
     <div id="inside-cards">
       <div
@@ -54,6 +54,7 @@ export default {
     const myRole = store.getters["modules/myRole"];
     const users = store.getters["modules/users"];
     const nightPeriodSecond = store.getters["modules/nightPeriodSecond"];
+    const dayPeriodMinute = store.getters["modules/dayPeriodMinute"];
 
     const otherUsers = computed(() => users.filter((user) => user !== myName));
 
@@ -125,6 +126,7 @@ export default {
       state,
       myRole,
       nightPeriodSecond,
+      dayPeriodMinute,
       nightActionInside,
       nightActionOutside,
       otherUsers,

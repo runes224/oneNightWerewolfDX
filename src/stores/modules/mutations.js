@@ -12,6 +12,9 @@ export const mutations = {
   setNightPeriodSecond(state, num) {
     state.nightPeriodSecond = num;
   },
+  setDayPeriodMinute(state, num) {
+    state.dayPeriodMinute = num;
+  },
   setRoles(state, arr) {
     state.roles = arr;
   },

@@ -7,11 +7,14 @@
 <script>
 export default {
   name: "timer",
-  props: ["seccond"],
+  props: {
+    nightPeriodSecond: Number,
+    dayPeriodMinute: Number
+  },
   data() {
     return {
       min: 0,
-      sec: this.seccond,
+      sec: this.nightPeriodSecond,
       timerObj: null,
       msg: "",
       doneNightActionFlag: false,
@@ -31,7 +34,7 @@ export default {
           this.$emit('start-voting');
           return false;
         }
-        this.min = 5;
+        this.min = this.dayPeriodMinute;
         // this.sec = 5;
         this.msg = "夜が明けました。議論を始めてください。";
         this.doneNightActionFlag = true;

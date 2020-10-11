@@ -14,6 +14,9 @@ export const actions = {
   setNightPeriodSecond({commit}, num) {
     commit('setNightPeriodSecond', num);
   },
+  setDayPeriodMinute({commit}, num) {
+    commit('setDayPeriodMinute', num);
+  },
   setRoles({commit}, arr) {
     commit('setRoles', arr)
   },

@@ -110,7 +110,6 @@ const roles = (receivedData) => {
   store.dispatch('modules/setMyRole', myRole);
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
-  store.dispatch('modules/setNightPeriodSecond', 20);
   router.push('/playingGame');
 }
 

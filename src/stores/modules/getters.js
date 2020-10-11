@@ -26,6 +26,9 @@ export const getters = {
   nightPeriodSecond(state) {
     return state.nightPeriodSecond;
   },
+  dayPeriodMinute(state) {
+    return state.dayPeriodMinute;
+  },
   getUsersNumber(state) {
     return state.users.length;
   },
