@@ -34,5 +34,8 @@ export const getters = {
   },
   isGameMaster(state) {
     return state.gameMasterFlag;
+  },
+  isFinishedGame(state) {
+    return state.finishedGameFlag;
   }
 }

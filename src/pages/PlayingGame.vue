@@ -22,7 +22,7 @@
       >
         <div class="card" :class="card.design"></div>
         {{ card.name }}
-        <span style="color: black; font-weight: initial"
+        <span th:if="finishGameFlag" style="color: black; font-weight: initial"
           >投票数：{{ card.votedNum }}</span
         >
       </div>
@@ -47,7 +47,7 @@ export default {
       insideCards: store.getters["modules/insideCards"],
       outsideCards: store.getters["modules/outsideCards"],
       doneNightActionFlag: false,
-      startVotingFlag: false
+      startVotingFlag: false,
     });
 
     const myName = store.getters["modules/myName"];
@@ -57,6 +57,7 @@ export default {
     const dayPeriodMinute = store.getters["modules/dayPeriodMinute"];
 
     const otherUsers = computed(() => users.filter((user) => user !== myName));
+    const finishGameFlag = computed(() => store.getters["modules/isFinishedGame"]);
 
     const isMyCard = (name) => {
       if (myName === name) {
@@ -110,7 +111,6 @@ export default {
     };
 
     const startVoting = () => {
-      console.log(startVoting);
       state.startVotingFlag = true;
     };
 
@@ -132,6 +132,7 @@ export default {
       otherUsers,
       isMyCard,
       startVoting,
+      finishGameFlag,
     };
   },
 };

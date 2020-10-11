@@ -25,7 +25,9 @@ export default {
   },
   methods: {
     required(value) { return !!value || "必ず入力してください"}, // 入力必須の制約
-    notDuplicated(value, users) { return users === undefined || users.filter(user => user === value).length === 0 || "他のユーザと名前が重複しています"}, // 入力必須の制約
+    notDuplicated(value, users) {
+      return users === undefined || users.filter(user => user === value).length === 0 || "他のユーザと名前が重複しています"
+    }, // 入力必須の制約
     onlyNumbers(value) { return (Number.isInteger(Number(value)) && Number(value) < 100000 && Number(value) > 10000) || "整数5桁で入力してください"}, // 数字5桁のみ
     registerName() {
       if (!this.$refs.register_name_form.validate()) {
@@ -38,6 +40,9 @@ export default {
         roomId: this.roomId
       };
       this.$websocket.send(JSON.stringify(sendData));
+      if (this.roomId !== '') {
+        this.$store.dispatch('modules/setRoomId', this.roomId);
+      }
       this.$store.dispatch('modules/registerName', { name: this.name, gameMasterFlag: this.createNewRoomFlag });
       this.$router.push('/choiceRole');
     }

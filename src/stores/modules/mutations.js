@@ -32,5 +32,8 @@ export const mutations = {
   },
   clearMessages(state) {
     state.messages = [];
+  },
+  finishGame(state) {
+    state.finishedGameFlag = true;
   }
 }

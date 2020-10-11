@@ -65,7 +65,12 @@ export default {
         {
           name: "狂人",
           number: 0,
-          description: "人狼の勝利があなたの勝利です",
+          description: "人狼陣営の勝利があなたの勝利です",
+        },
+        {
+          name: "吊人",
+          number: 0,
+          description: "処刑されるとゲームに勝利します",
         },
       ],
       nightPeriodSecond: 20,

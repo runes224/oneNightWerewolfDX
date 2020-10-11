@@ -19,7 +19,7 @@
         </v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="blue darken-1" text @click="dialog = false">キャンセル</v-btn>
+          <v-btn color="blue darken-1" text @click="state.dialog = false">キャンセル</v-btn>
           <v-btn color="blue darken-1" text @click="vote">送信</v-btn>
         </v-card-actions>
       </v-card>
@@ -43,6 +43,7 @@ export default {
   },
   setup(props, context) {
     const websocket = context.root.$websocket
+    const store = context.root.$store
 
     const state = reactive({
       dialog: false,
@@ -51,13 +52,14 @@ export default {
     })
 
     const vote = () => {
-      this.dialog = false;
+      state.dialog = false;
 
       const data = {
         action: "vote",
         votedUser: state.votedUser,
         role: props.myRole,
-        outsideCards: props.outsideCards
+        outsideCards: props.outsideCards,
+        roomId: store.getters['modules/roomId']
       };
 
       websocket.send(JSON.stringify(data));

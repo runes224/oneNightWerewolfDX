@@ -2,7 +2,7 @@ import Vue from "vue"
 import store from '../stores/store'
 import router from '../router'
 
-const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod")
+const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
 
 const emitter = new Vue({
   methods: {
@@ -48,7 +48,7 @@ const join = (receivedData) => {
   } else if (gameMasterFlag === true && joinMember.name === myName) {
     addMessage("部屋を作成しました。");
     addMessage("ルームIDは" + joinMember.roomId + "です。");
-    store.dispatch('modules/setRoomId', joinMember.roomId)
+    store.dispatch('modules/setRoomId', joinMember.roomId);
   } else {
     addMessage(joinMember.name + "が入室しました。");
   }
@@ -114,55 +114,47 @@ const roles = (receivedData) => {
 }
 
 const vote = (receivedData) => {
-  console.log(receivedData)
-  // if (receivedData.role == "怪盗") {
-  //   this.resultOutsideCards = receivedData.outsideCards;
-  // }
-  // let votedUser = receivedData.votedUser;
-  // this.outsideCards.forEach(card => {
-  //   if (card.name == votedUser) {
-  //     card.votedNum++;
-  //     this.outsideCards.splice(card.num, 1, card);
-  //   }
-  // });
-  // this.votedCounter++;
-  // if (this.votedCounter >= this.users.length) {
-  //   // 勝敗を決める
-  //   let maxNum = Math.max(
-  //     ...this.outsideCards.map(card => card.votedNum)
-  //   );
-  //   let victims = this.outsideCards.filter(
-  //     card => card.votedNum == maxNum
-  //   );
-  //   clearMessages();
-  //   victims.forEach(victim => {
-  //     addMessage(victim.name + "が処刑されました");
-  //   });
-  //   if (victims.filter(victim => victim.role == "人狼").length > 0) {
-  //     addMessage("人狼を処刑したので村人陣営の勝利です");
-  //   } else {
-  //     addMessage(
-  //       "村人陣営のユーザが処刑されたので人狼陣営の勝利です"
-  //     );
-  //   }
-  //   for (let index = 0; index < 2; index++) {
-  //     let card = this.insideCards[index];
-  //     card.design = card.role;
-  //     this.insideCards.splice(index, 1, card);
-  //   }
-  //   this.outsideCards.forEach(card => {
-  //     if (this.resultOutsideCards.length > 0) {
-  //       let resultCard = this.resultOutsideCards.filter(
-  //         resultCard => resultCard.name === card.name
-  //       )[0];
-  //       card.design = resultCard.role;
-  //     } else {
-  //       card.design = card.role;
-  //     }
-  //     this.outsideCards.splice(card.num, 1, card);
-  //   });
-  //   this.status = "resultAnnouncement";
-  // }
+  let votedUsers = receivedData.votedUsers;
+  let resultOutsideCards = receivedData.resultOutsideCards;
+  const insideCards = store.getters["modules/insideCards"];
+  const outsideCards = store.getters["modules/outsideCards"];
+  if (resultOutsideCards.length === 0) {
+    resultOutsideCards = outsideCards;
+  }
+
+  votedUsers.forEach(votedUser => {
+    resultOutsideCards.map(card => {
+      if (card.name === votedUser) {
+        card.votedNum++;
+      }
+    });
+  });
+  let maxNum = Math.max(
+    resultOutsideCards.map(card => card.votedNum)
+  );
+  let executioners = resultOutsideCards.filter(
+    card => card.votedNum == maxNum
+  );
+  clearMessages();
+  executioners.forEach(executioner => {
+    addMessage(executioner.name + "が処刑されました");
+  });
+  const hangingPersonVictoryCondition = executioners.filter(executioner => executioner.role === "吊人").length > 0;
+  const werewolfVictoryCondition = executioners.filter(executioner => executioner.role === "人狼").length > 0;
+  if (hangingPersonVictoryCondition === true) {
+    addMessage("吊人が処刑されたので吊人の勝利です");
+  } else if (hangingPersonVictoryCondition === false && werewolfVictoryCondition === true) {
+    addMessage("人狼を処刑したので村人陣営の勝利です");
+  } else {
+    addMessage(
+      "村人陣営のユーザが処刑されたので人狼陣営の勝利です"
+    );
+  }
+  insideCards.map(card => card.design = card.role);
+  resultOutsideCards.map(card => card.design = card.role);
+  store.dispatch('modules/setInsideCards', insideCards);
+  store.dispatch('modules/setOutsideCards', resultOutsideCards);
+  store.dispatch('modules/finishGame');
 }
 
 socket.onopen = msg => {

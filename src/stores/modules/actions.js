@@ -5,6 +5,9 @@ export const actions = {
   registerName({commit}, obj) {
     commit('registerName', obj);
   },
+  finishGame({commit}) {
+    commit('finishGame');
+  },
   setMyRole({commit}, str) {
     commit('setMyRole', str);
   },
