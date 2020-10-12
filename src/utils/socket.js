@@ -60,6 +60,10 @@ const roles = (receivedData) => {
   const myName = store.getters['modules/myName'];
   const myRole = receivedRoles[myName];
   const roles = store.getters['modules/roles'];
+
+  store.dispatch('modules/setNightPeriodSecond', receivedData.nightPeriodSecond);
+  store.dispatch('modules/setDayPeriodMinute', receivedData.dayPeriodMinute);
+
   clearMessages();
   addMessage("あなたの役職は" + myRole + "です。");
   roles.forEach(role => {

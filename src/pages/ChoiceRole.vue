@@ -91,12 +91,12 @@ export default {
     const startGame = () => {
       console.log(state)
       store.dispatch("modules/setRoles", state.roles);
-      store.dispatch('modules/setNightPeriodSecond', state.nightPeriodSecond);
-      store.dispatch('modules/setDayPeriodMinute', state.dayPeriodMinute);
       const sendData = {
         action: "startGame",
         roles: state.roles,
         users: store.getters["modules/users"],
+        nightPeriodSecond: state.nightPeriodSecond,
+        dayPeriodMinute: state.dayPeriodMinute,
       };
       websocket.send(JSON.stringify(sendData));
     };
