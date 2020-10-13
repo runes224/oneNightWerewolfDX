@@ -44,8 +44,8 @@ export default {
     const store = context.root.$store;
 
     const state = reactive({
-      insideCards: store.getters["modules/insideCards"],
-      outsideCards: store.getters["modules/outsideCards"],
+      insideCards: computed(() => store.getters["modules/insideCards"]),
+      outsideCards: computed(() =>store.getters["modules/outsideCards"]),
       doneNightActionFlag: false,
       startVotingFlag: false,
     });
@@ -108,6 +108,8 @@ export default {
         );
       }
       state.doneNightActionFlag = true;
+      store.dispatch("modules/setInsideCards", state.insideCards);
+      store.dispatch("modules/setOutsideCards", state.outsideCards);
     };
 
     const startVoting = () => {

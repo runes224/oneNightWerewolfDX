@@ -133,11 +133,10 @@ const vote = (receivedData) => {
       }
     });
   });
-  let maxNum = Math.max(
-    resultOutsideCards.map(card => card.votedNum)
-  );
-  let executioners = resultOutsideCards.filter(
-    card => card.votedNum == maxNum
+  const votedNumList = resultOutsideCards.map(card => Number(card.votedNum));
+  const maxNum = Math.max.apply(null, votedNumList);
+  const executioners = resultOutsideCards.filter(
+    card => card.votedNum === maxNum
   );
   clearMessages();
   executioners.forEach(executioner => {

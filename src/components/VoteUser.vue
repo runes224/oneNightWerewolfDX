@@ -58,7 +58,7 @@ export default {
         action: "vote",
         votedUser: state.votedUser,
         role: props.myRole,
-        outsideCards: props.outsideCards,
+        outsideCards: store.getters['modules/outsideCards'],
         roomId: store.getters['modules/roomId']
       };
 
