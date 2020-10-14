@@ -22,7 +22,7 @@
       >
         <div class="card" :class="card.design"></div>
         {{ card.name }}
-        <span th:if="finishGameFlag" style="color: black; font-weight: initial"
+        <span v-if="state.finishGameFlag" style="color: black; font-weight: initial"
           >投票数：{{ card.votedNum }}</span
         >
       </div>
@@ -46,6 +46,7 @@ export default {
     const state = reactive({
       insideCards: computed(() => store.getters["modules/insideCards"]),
       outsideCards: computed(() =>store.getters["modules/outsideCards"]),
+      finishGameFlag: computed(() =>store.getters["modules/isFinishedGame"]),
       doneNightActionFlag: false,
       startVotingFlag: false,
     });
@@ -57,7 +58,6 @@ export default {
     const dayPeriodMinute = store.getters["modules/dayPeriodMinute"];
 
     const otherUsers = computed(() => users.filter((user) => user !== myName));
-    const finishGameFlag = computed(() => store.getters["modules/isFinishedGame"]);
 
     const isMyCard = (name) => {
       if (myName === name) {
@@ -134,7 +134,6 @@ export default {
       otherUsers,
       isMyCard,
       startVoting,
-      finishGameFlag,
     };
   },
 };
