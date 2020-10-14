@@ -1,7 +1,7 @@
 <template>
   <div class="direction-column">
     <Timer :nightPeriodSecond="Number(nightPeriodSecond)" :dayPeriodMinute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
-    <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole"></VoteUser>
+    <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole" @end-voting="endVoting()"></VoteUser>
     <div id="inside-cards">
       <div
         class="direction-column card-area"
@@ -116,6 +116,10 @@ export default {
       state.startVotingFlag = true;
     };
 
+    const endVoting = () => {
+      state.startVotingFlag = false;
+    };
+
     const addMessage = (message) => {
       store.dispatch("modules/addMessage", message);
     };
@@ -134,6 +138,7 @@ export default {
       otherUsers,
       isMyCard,
       startVoting,
+      endVoting
     };
   },
 };

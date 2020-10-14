@@ -44,6 +44,7 @@ export default {
   setup(props, context) {
     const websocket = context.root.$websocket
     const store = context.root.$store
+    const emit = context.emit
 
     const state = reactive({
       dialog: false,
@@ -54,6 +55,7 @@ export default {
     const vote = () => {
       state.dialog = false;
 
+      emit('end-voting');
       const data = {
         action: "vote",
         votedUser: state.votedUser,
