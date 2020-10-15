@@ -1,6 +1,6 @@
 <template>
   <div class="timer">
-    <div class="time" v-html="msg"></div><div v-if="!startVotingFlag">残り時間：{{ formatTime }}</div>
+    <div class="time"></div><div v-if="!startVotingFlag">残り時間：{{ formatTime }}</div>
   </div>
 </template>
 
@@ -16,7 +16,6 @@ export default {
       min: 0,
       sec: this.nightPeriodSecond,
       timerObj: null,
-      msg: "",
       doneNightActionFlag: false,
       startVotingFlag: false,
     };
@@ -30,12 +29,12 @@ export default {
         if (this.doneNightActionFlag == true) {
           clearTimeout(this.timerObj);
           this.startVotingFlag = true;
-          this.msg = "議論の時間が終わりました。<br>投票をしてください。";
           this.$emit('start-voting');
           return false;
         }
         this.min = this.dayPeriodMinute;
-        this.msg = "夜が明けました。議論を始めてください。";
+        this.$store.dispatch("modules/clearMessages");
+        this.$store.dispatch("modules/addMessage", "夜が明けました。議論を始めてください。");
         this.doneNightActionFlag = true;
       } else {
         this.sec--;
@@ -58,7 +57,6 @@ export default {
     second: {
       immediate: true,
       handler: function() {
-        this.msg = "夜の行動を行ってください。";
         this.start();
       }
     }

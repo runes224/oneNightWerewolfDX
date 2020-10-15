@@ -71,6 +71,9 @@ const roles = (receivedData) => {
       addMessage(role.description);
     }
   });
+  if (myRole === "占い師" || myRole === "怪盗") {
+    addMessage("夜の行動を行ってください。");
+  }
 
   // カードを配る
   let i = 0;

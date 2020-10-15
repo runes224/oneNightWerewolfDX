@@ -113,10 +113,14 @@ export default {
     };
 
     const startVoting = () => {
+      clearMessages()
+      addMessage("議論の時間が終わりました。投票をしてください。");
       state.startVotingFlag = true;
     };
 
     const endVoting = () => {
+      clearMessages()
+      addMessage("投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。");
       state.startVotingFlag = false;
     };
 
