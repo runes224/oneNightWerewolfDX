@@ -8,6 +8,9 @@ export const actions = {
   finishGame({commit}) {
     commit('finishGame');
   },
+  startGame({commit}) {
+    commit('startGame');
+  },
   setMyRole({commit}, str) {
     commit('setMyRole', str);
   },
@@ -34,5 +37,8 @@ export const actions = {
   },
   clearMessages({commit}) {
     commit('clearMessages');
+  },
+  resetState({commit}) {
+    commit('resetState');
   }
 }

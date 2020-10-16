@@ -73,8 +73,8 @@ export default {
           description: "処刑されるとゲームに勝利します",
         },
       ],
-      nightPeriodSecond: 20,
-      dayPeriodMinute: 5,
+      nightPeriodSecond: store.getters["modules/nightPeriodSecond"],
+      dayPeriodMinute: store.getters["modules/dayPeriodMinute"],
     });
 
     const remainCounter = computed(() => {

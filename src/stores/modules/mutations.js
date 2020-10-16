@@ -35,5 +35,14 @@ export const mutations = {
   },
   finishGame(state) {
     state.finishedGameFlag = true;
+  },
+  startGame(state) {
+    state.finishedGameFlag = false;
+  },
+  resetState(state) {
+    state.myRole = '';
+    state.finishedGameFlag = false;
+    state.insideCards = [];
+    state.outsideCards = [];
   }
 }

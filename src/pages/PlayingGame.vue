@@ -1,7 +1,12 @@
 <template>
   <div class="direction-column">
-    <Timer :nightPeriodSecond="Number(nightPeriodSecond)" :dayPeriodMinute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
-    <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole" @end-voting="endVoting()"></VoteUser>
+    <header class="margin_5">
+      <Timer :nightPeriodSecond="Number(nightPeriodSecond)" :dayPeriodMinute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
+      <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole" @end-voting="endVoting()"></VoteUser>
+      <v-row justify="center" v-if="state.finishGameFlag && gameMasterFlag">
+        <v-btn color="red lighten-2" dark @click="nextGame">次のゲームに進む</v-btn>
+      </v-row>
+    </header>
     <div id="inside-cards">
       <div
         class="direction-column card-area"
@@ -42,6 +47,7 @@ export default {
   },
   setup(props, context) {
     const store = context.root.$store;
+    const router = context.root.$router;
 
     const state = reactive({
       insideCards: computed(() => store.getters["modules/insideCards"]),
@@ -54,6 +60,7 @@ export default {
     const myName = store.getters["modules/myName"];
     const myRole = store.getters["modules/myRole"];
     const users = store.getters["modules/users"];
+    const gameMasterFlag = store.getters["modules/isGameMaster"];
     const nightPeriodSecond = store.getters["modules/nightPeriodSecond"];
     const dayPeriodMinute = store.getters["modules/dayPeriodMinute"];
 
@@ -72,6 +79,7 @@ export default {
           let card = state.insideCards[index];
           card.design = card.role;
           state.insideCards.splice(index, 1, card);
+          clearMessages();
           addMessage("中央の伏せカード" + (index + 1) + ":" + card.role);
         }
       }
@@ -132,9 +140,16 @@ export default {
       store.dispatch("modules/clearMessages");
     };
 
+    const nextGame = () => {
+      clearMessages();
+      store.dispatch("modules/startGame");
+      router.push('/choiceRole');
+    };
+
     return {
       state,
       myRole,
+      gameMasterFlag,
       nightPeriodSecond,
       dayPeriodMinute,
       nightActionInside,
@@ -142,7 +157,8 @@ export default {
       otherUsers,
       isMyCard,
       startVoting,
-      endVoting
+      endVoting,
+      nextGame
     };
   },
 };
@@ -155,6 +171,10 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+.margin_5 {
+  margin: 0.5rem 0.5rem;
 }
 
 .myCard {
