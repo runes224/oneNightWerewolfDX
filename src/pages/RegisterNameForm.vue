@@ -23,6 +23,11 @@ export default {
       createNewRoomFlag: true
     };
   },
+    computed: {
+    users() {
+      return this.$store.getters['modules/users'];
+    }
+  },
   methods: {
     required(value) { return !!value || "必ず入力してください"}, // 入力必須の制約
     notDuplicated(value, users) {
@@ -45,11 +50,6 @@ export default {
       }
       this.$store.dispatch('modules/registerName', { name: this.name, gameMasterFlag: this.createNewRoomFlag });
       this.$router.push('/choiceRole');
-    }
-  },
-  computed: {
-    users() {
-      return this.$store.getters['modules/users'];
     }
   }
 }
