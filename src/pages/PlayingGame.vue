@@ -74,7 +74,7 @@ export default {
     };
 
     const nightActionInside = () => {
-      if (myRole == "占い師" && state.doneNightActionFlag == false) {
+      if (myRole === "占い師" && state.doneNightActionFlag === false) {
         for (let index = 0; index < 2; index++) {
           let card = state.insideCards[index];
           card.design = card.role;
@@ -90,14 +90,14 @@ export default {
       if (state.doneNightActionFlag) {
         return;
       }
-      if (myRole == "占い師") {
+      if (myRole === "占い師") {
         choicedCard.design = choicedCard.role;
         state.outsideCards.splice(choicedCard.num, 1, choicedCard);
         clearMessages();
         addMessage(
           choicedCard.name + "さんのカードは" + choicedCard.role + "でした"
         );
-      } else if (myRole == "怪盗") {
+      } else if (myRole === "怪盗") {
         choicedCard.design = choicedCard.role;
         const myCard = state.outsideCards.filter(
           (outsideCard) => outsideCard.name === myName

@@ -8,8 +8,14 @@
 export default {
   name: "Timer",
   props: {
-    nightPeriodSecond: Number,
-    dayPeriodMinute: Number
+    nightPeriodSecond: {
+      type: Number,
+      default: 20
+    },
+    dayPeriodMinute: {
+      type: Number,
+      default: 5
+    },
   },
   data() {
     return {
@@ -48,7 +54,7 @@ export default {
         this.min--;
         this.sec = 59;
       } else if (this.sec <= 0 && this.min <= 0) {
-        if (this.doneNightActionFlag == true) {
+        if (this.doneNightActionFlag === true) {
           clearTimeout(this.timerObj);
           this.startVotingFlag = true;
           this.$emit('start-voting');

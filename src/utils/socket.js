@@ -81,7 +81,7 @@ const roles = (receivedData) => {
   let outsideCards = [];
   Object.entries(receivedRoles).map(([key, value]) => {
     let obj = {};
-    if (key == myName) {
+    if (key === myName) {
       obj = {
         name: key,
         role: value,
@@ -105,7 +105,7 @@ const roles = (receivedData) => {
     }
     i++;
   });
-  if (myRole == "人狼") {
+  if (myRole === "人狼") {
     outsideCards.forEach(card => {
       if (card.role === "人狼" && card.name !== myName) {
         card.design = card.role;

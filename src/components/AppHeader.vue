@@ -25,8 +25,14 @@
 export default {
   name: "AppHeader",
   props: {
-    registerRoomIdFlag: Boolean,
-    roomId: Number
+    registerRoomIdFlag: {
+      type: Boolean,
+      required: true
+    },
+    roomId: {
+      type: Number,
+      default: 0
+    },
   },
   methods: {
     onCopy: function () {

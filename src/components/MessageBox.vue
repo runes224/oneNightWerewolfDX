@@ -11,7 +11,10 @@
 export default {
   name: "MessageBox",
   props: {
-    messages: Array
+    messages: {
+      type: Array,
+      default: () => []
+    },
   }
 };
 </script>
