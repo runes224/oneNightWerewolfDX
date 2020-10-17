@@ -5,17 +5,17 @@
         残り{{ remainCounter }}枚、役職を増やしてください。
       </div>
       <div
-        class="input-area"
         v-for="role in state.roles"
-        v-bind:key="role.name"
+        :key="role.name"
+        class="input-area"
       >
         <div class="role-name">{{ role.name }}：</div>
         <number-input-spinner
+          v-model="role.number"
           :min="0"
           :max="10"
           :step="1"
-          :integerOnly="true"
-          v-model="role.number"
+          :integer-only="true"
         ></number-input-spinner>
       </div>
       <div class="margin_1">
@@ -28,7 +28,7 @@
           <input v-model="state.dayPeriodMinute" label="Standard">分
         </div>
       </div>
-      <v-btn color="primary" @click="startGame" class="margin_1" style="margin-top: 0;"
+      <v-btn color="primary" class="margin_1" style="margin-top: 0;" @click="startGame"
         >ゲーム開始</v-btn
       >
     </div>
@@ -89,7 +89,7 @@ export default {
     const isGameMaster = computed(() => store.getters["modules/isGameMaster"]);
 
     const startGame = () => {
-      console.log(state)
+      console.log(state);
       store.dispatch("modules/setRoles", state.roles);
       const sendData = {
         action: "startGame",

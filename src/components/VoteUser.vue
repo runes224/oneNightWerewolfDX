@@ -1,7 +1,7 @@
 <template>
   <v-row justify="center">
     <v-dialog v-model="state.dialog" scrollable max-width="25rem">
-      <template v-slot:activator="{ on }">
+      <template #activator="{ on }">
         <v-btn color="red lighten-2" dark v-on="on">投票する</v-btn>
       </template>
       <v-card>
@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { reactive } from '@vue/composition-api'
+import { reactive } from '@vue/composition-api';
 
 export default {
   props: {
@@ -42,15 +42,15 @@ export default {
     }
   },
   setup(props, context) {
-    const websocket = context.root.$websocket
-    const store = context.root.$store
-    const emit = context.emit
+    const websocket = context.root.$websocket;
+    const store = context.root.$store;
+    const emit = context.emit;
 
     const state = reactive({
       dialog: false,
       votedUser: {},
       otherUsers: props.otherUsers
-    })
+    });
 
     const vote = () => {
       state.dialog = false;
@@ -65,9 +65,9 @@ export default {
       };
 
       websocket.send(JSON.stringify(data));
-    }
+    };
 
-    return { state, vote }
+    return { state, vote };
   }
-}
+};
 </script>

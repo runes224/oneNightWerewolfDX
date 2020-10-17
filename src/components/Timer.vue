@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "timer",
+  name: "Timer",
   props: {
     nightPeriodSecond: Number,
     dayPeriodMinute: Number
@@ -19,6 +19,28 @@ export default {
       doneNightActionFlag: false,
       startVotingFlag: false,
     };
+  },
+  computed: {
+    formatTime: function() {
+      let timeStrings = [this.min.toString(), this.sec.toString()].map(function(
+        str
+      ) {
+        if (str.length < 2) {
+          return "0" + str;
+        } else {
+          return str;
+        }
+      });
+      return timeStrings[0] + ":" + timeStrings[1];
+    }
+  },
+  watch: {
+    second: {
+      immediate: true,
+      handler: function() {
+        this.start();
+      }
+    }
   },
   methods: {
     count: function() {
@@ -52,28 +74,6 @@ export default {
       clearInterval(this.timerObj);
     },
 
-  },
-  watch: {
-    second: {
-      immediate: true,
-      handler: function() {
-        this.start();
-      }
-    }
-  },
-  computed: {
-    formatTime: function() {
-      let timeStrings = [this.min.toString(), this.sec.toString()].map(function(
-        str
-      ) {
-        if (str.length < 2) {
-          return "0" + str;
-        } else {
-          return str;
-        }
-      });
-      return timeStrings[0] + ":" + timeStrings[1];
-    }
   }
 };
 </script>

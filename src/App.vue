@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <AppHeader :registerRoomIdFlag="roomId !== 0" :roomId="Number(roomId)"></AppHeader>
+    <AppHeader :register-room-id-flag="roomId !== 0" :room-id="Number(roomId)"></AppHeader>
     <v-container>
       <div id="app">
         <button v-if="!isConnected" @click="connect">接続</button>

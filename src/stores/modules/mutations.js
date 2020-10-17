@@ -45,4 +45,4 @@ export const mutations = {
     state.insideCards = [];
     state.outsideCards = [];
   }
-}
+};

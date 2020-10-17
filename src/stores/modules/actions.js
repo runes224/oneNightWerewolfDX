@@ -24,13 +24,13 @@ export const actions = {
     commit('setDayPeriodMinute', num);
   },
   setRoles({commit}, arr) {
-    commit('setRoles', arr)
+    commit('setRoles', arr);
   },
   setInsideCards({commit}, arr) {
-    commit('setInsideCards', arr)
+    commit('setInsideCards', arr);
   },
   setOutsideCards({commit}, arr) {
-    commit('setOutsideCards', arr)
+    commit('setOutsideCards', arr);
   },
   addMessage({commit}, arr) {
     commit('addMessage', arr);
@@ -41,4 +41,4 @@ export const actions = {
   resetState({commit}) {
     commit('resetState');
   }
-}
+};

@@ -1,6 +1,6 @@
 <template>
-  <div class="kakomi" v-if="messages.length > 0">
-    <ul style="list-style: none" v-for="message in messages" v-bind:key="message">
+  <div v-if="messages.length > 0" class="kakomi">
+    <ul v-for="message in messages" :key="message" style="list-style: none">
       <li>{{message}}</li>
       <v-divider></v-divider>
     </ul>

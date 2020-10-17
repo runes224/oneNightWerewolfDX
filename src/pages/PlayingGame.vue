@@ -1,28 +1,28 @@
 <template>
   <div class="direction-column">
     <header class="margin_5">
-      <Timer :nightPeriodSecond="Number(nightPeriodSecond)" :dayPeriodMinute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
-      <VoteUser v-if="state.startVotingFlag" :otherUsers="otherUsers" :myRole="myRole" @end-voting="endVoting()"></VoteUser>
-      <v-row justify="center" v-if="state.finishGameFlag && gameMasterFlag">
+      <Timer :night-period-second="Number(nightPeriodSecond)" :day-period-minute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
+      <VoteUser v-if="state.startVotingFlag" :other-users="otherUsers" :my-role="myRole" @end-voting="endVoting()"></VoteUser>
+      <v-row v-if="state.finishGameFlag && gameMasterFlag" justify="center">
         <v-btn color="red lighten-2" dark @click="nextGame">次のゲームに進む</v-btn>
       </v-row>
     </header>
     <div id="inside-cards">
       <div
-        class="direction-column card-area"
         v-for="card in state.insideCards"
-        v-bind:key="card.name"
+        :key="card.name"
+        class="direction-column card-area"
         @click="nightActionInside()"
       >
-        <div class="card" v-bind:class="card.design"></div>
+        <div class="card" :class="card.design"></div>
       </div>
     </div>
     <v-divider></v-divider>
     <div id="outside-cards">
       <div
-        :class="['direction-column', 'card-area', isMyCard(card.name)]"
         v-for="card in state.outsideCards"
-        v-bind:key="card.name"
+        :key="card.name"
+        :class="['direction-column', 'card-area', isMyCard(card.name)]"
         @click="nightActionOutside(card)"
       >
         <div class="card" :class="card.design"></div>
@@ -121,13 +121,13 @@ export default {
     };
 
     const startVoting = () => {
-      clearMessages()
+      clearMessages();
       addMessage("議論の時間が終わりました。投票をしてください。");
       state.startVotingFlag = true;
     };
 
     const endVoting = () => {
-      clearMessages()
+      clearMessages();
       addMessage("投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。");
       state.startVotingFlag = false;
     };

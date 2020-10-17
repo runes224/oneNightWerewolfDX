@@ -1,10 +1,10 @@
-import Vue from 'vue'
-import Router from 'vue-router'
-import RegisterNameForm from './pages/RegisterNameForm.vue'
-import ChoiceRole from './pages/ChoiceRole.vue'
-import PlayingGame from './pages/PlayingGame.vue'
+import Vue from 'vue';
+import Router from 'vue-router';
+import RegisterNameForm from './pages/RegisterNameForm.vue';
+import ChoiceRole from './pages/ChoiceRole.vue';
+import PlayingGame from './pages/PlayingGame.vue';
 
-Vue.use(Router)
+Vue.use(Router);
 
 export default new Router({
   mode: 'history',
@@ -25,4 +25,4 @@ export default new Router({
       component: PlayingGame,
     }
   ]
-})
+});

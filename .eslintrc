@@ -18,5 +18,12 @@
     "prettier/vue"
   ],
   "plugins": ["vue"],
-  "rules": {}
+  "rules": {
+    // ==を使おうが===を使おうが気にしない。
+    "eqeqeq": "warn",
+    // if文などで{}を略したらwarning。
+    "curly": "warn",
+    // セミコロンは必須。無かったらLinterエラー。
+    "semi": ["warn", "always"]
+  }
 }

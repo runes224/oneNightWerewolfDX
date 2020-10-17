@@ -38,4 +38,4 @@ export const getters = {
   isFinishedGame(state) {
     return state.finishedGameFlag;
   }
-}
+};

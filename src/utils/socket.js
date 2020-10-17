@@ -1,25 +1,25 @@
-import Vue from "vue"
-import store from '../stores/store'
-import router from '../router'
+import Vue from "vue";
+import store from '../stores/store';
+import router from '../router';
 
 const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
 
 const emitter = new Vue({
   methods: {
     send(message) {
-      console.log('send')
-      console.log(message)
+      console.log('send');
+      console.log(message);
       if (1 === socket.readyState) {
-        socket.send(message)
+        socket.send(message);
       }
     }
   }
-})
+});
 
 socket.onmessage = msg => {
-  console.log('received')
+  console.log('received');
   const receivedData = JSON.parse(msg.data);
-  console.log(receivedData)
+  console.log(receivedData);
   switch (receivedData.type) {
     case "join":
       join(receivedData);
@@ -37,7 +37,7 @@ socket.onmessage = msg => {
 };
 
 const join = (receivedData) => {
-  console.log("join")
+  console.log("join");
   const joinMember = receivedData.member;
   const gameMasterFlag = store.getters['modules/isGameMaster'];
   const roomId = store.getters['modules/roomId'];
@@ -52,8 +52,8 @@ const join = (receivedData) => {
   } else {
     addMessage(joinMember.name + "が入室しました。");
   }
-  store.dispatch('modules/addUser', joinMember.name)
-}
+  store.dispatch('modules/addUser', joinMember.name);
+};
 
 const roles = (receivedData) => {
   let receivedRoles = receivedData.userRoles;
@@ -118,7 +118,7 @@ const roles = (receivedData) => {
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
   router.push('/playingGame');
-}
+};
 
 const vote = (receivedData) => {
   let votedUsers = receivedData.votedUsers;
@@ -161,7 +161,7 @@ const vote = (receivedData) => {
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', resultOutsideCards);
   store.dispatch('modules/finishGame');
-}
+};
 
 socket.onopen = msg => {
   console.log(msg);
@@ -169,16 +169,16 @@ socket.onopen = msg => {
 };
 
 socket.onerror = function (err) {
-  console.log("error", err)
+  console.log("error", err);
   addMessage("エラーが発生しました");
-}
+};
 
 const addMessage = (message) => {
   store.dispatch('modules/addMessage', message);
-}
+};
 
 const clearMessages = () => {
   store.dispatch('modules/clearMessages');
-}
+};
 
-export default emitter
+export default emitter;
