@@ -37,8 +37,5 @@ export const actions = {
   },
   clearMessages({commit}) {
     commit('clearMessages');
-  },
-  resetState({commit}) {
-    commit('resetState');
   }
 };

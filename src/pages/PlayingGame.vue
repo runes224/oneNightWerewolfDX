@@ -75,11 +75,11 @@ export default {
 
     const nightActionInside = () => {
       if (myRole === "占い師" && state.doneNightActionFlag === false) {
+        clearMessages();
         for (let index = 0; index < 2; index++) {
           let card = state.insideCards[index];
           card.design = card.role;
           state.insideCards.splice(index, 1, card);
-          clearMessages();
           addMessage("中央の伏せカード" + (index + 1) + ":" + card.role);
         }
       }
@@ -142,7 +142,6 @@ export default {
 
     const nextGame = () => {
       clearMessages();
-      store.dispatch("modules/startGame");
       router.push('/choiceRole');
     };
 

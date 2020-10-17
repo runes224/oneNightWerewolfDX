@@ -61,6 +61,7 @@ const roles = (receivedData) => {
   const myRole = receivedRoles[myName];
   const roles = store.getters['modules/roles'];
 
+  store.dispatch("modules/startGame");
   store.dispatch('modules/setNightPeriodSecond', receivedData.nightPeriodSecond);
   store.dispatch('modules/setDayPeriodMinute', receivedData.dayPeriodMinute);
 
@@ -117,7 +118,9 @@ const roles = (receivedData) => {
   store.dispatch('modules/setMyRole', myRole);
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
-  router.push('/playingGame');
+  router.push('/playingGame').catch(() => {
+    router.go({path: router.currentRoute.path, force: true});
+  });
 };
 
 const vote = (receivedData) => {

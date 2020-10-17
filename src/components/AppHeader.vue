@@ -6,7 +6,6 @@
       <button
         v-clipboard:copy="roomId"
         v-clipboard:success="onCopy"
-        v-clipboard:error="onError"
         type="button"
       >
         <div

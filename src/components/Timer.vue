@@ -1,6 +1,7 @@
 <template>
-  <div class="timer">
-    <div class="time"></div><div v-if="!startVotingFlag">残り時間：{{ formatTime }}</div>
+  <div v-if="isShowTime" class="timer">
+    <div class="time"></div>
+    <div>残り時間：{{ formatTime }}</div>
   </div>
 </template>
 
@@ -23,7 +24,6 @@ export default {
       sec: this.nightPeriodSecond,
       timerObj: null,
       doneNightActionFlag: false,
-      startVotingFlag: false,
     };
   },
   computed: {
@@ -38,6 +38,9 @@ export default {
         }
       });
       return timeStrings[0] + ":" + timeStrings[1];
+    },
+    isShowTime: function() {
+      return this.min + this.sec > 0;
     }
   },
   watch: {
@@ -56,7 +59,6 @@ export default {
       } else if (this.sec <= 0 && this.min <= 0) {
         if (this.doneNightActionFlag === true) {
           clearTimeout(this.timerObj);
-          this.startVotingFlag = true;
           this.$emit('start-voting');
           return false;
         }
