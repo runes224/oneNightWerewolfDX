@@ -7,14 +7,19 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "lint-js": "eslint --ext .js,.vue .",
-    "fix-js": "eslint --ext .js,.vue . --fix"
+    "fix-js": "eslint --ext .js,.vue . --fix",
+    "test": "jest"
   },
   "dependencies": {
+    "@types/jest": "^26.0.14",
     "@vue/composition-api": "^1.0.0-beta.15",
     "babel-polyfill": "^6.26.0",
     "connection": "^1.1.0",
     "connection.js": "0.0.2",
     "core-js": "^3.6.4",
+    "jest": "^26.5.3",
+    "ts-jest": "^26.4.1",
+    "typescript": "^4.0.3",
     "vue": "^2.6.12",
     "vue-clipboard2": "^0.3.1",
     "vue-number-input-spinner": "^2.2.0",
@@ -57,5 +62,22 @@
     "> 1%",
     "last 2 versions",
     "not dead"
-  ]
+  ],
+  "jest": {
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "testMatch": [
+      "**/test/**/*.test.ts"
+    ]
+  }
 }
