@@ -2,6 +2,7 @@ describe('registerName', (): void => {
   jest.setTimeout(30000);
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
+  const socket_3 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
 
   test.concurrent('1人目の名前の登録ができること。', async () => {
     expect.assertions(2);
@@ -22,8 +23,9 @@ describe('registerName', (): void => {
       gameMasterFlag: true,
       roomId: "12345"
     };
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     if (1 === socket_1.readyState) {
+      console.log('send1')
       socket_1.send(JSON.stringify(sendData1));
     }
 
@@ -49,15 +51,25 @@ describe('registerName', (): void => {
       gameMasterFlag: false,
       roomId: "12345"
     };
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise(resolve => setTimeout(resolve, 3000));
     if (1 === socket_2.readyState) {
+      console.log('send2')
       socket_2.send(JSON.stringify(sendData2));
     }
 
     await new Promise(resolve => setTimeout(resolve, 5000));
-    console.log("5秒経過");
   });
 
+  test.concurrent('他の部屋のユーザにはメッセージが送信されないこと。', async () => {
+    expect.assertions(5);
+    let i = 0;
+    socket_3.onmessage = () => {
+      i++;
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    expect(i).toBe(0);
+  });
 
   test('websocket server 1 との接続を切断できること.', (done) => {
     expect.assertions(1);
@@ -75,6 +87,15 @@ describe('registerName', (): void => {
       done();
     };
     socket_2.close();
+  });
+
+  test('websocket server 3 との接続を切断できること.', (done) => {
+    expect.assertions(1);
+    socket_3.onclose = event => {
+      expect(event.wasClean).toBe(true);
+      done();
+    };
+    socket_3.close();
   });
 })
 
