@@ -1,8 +1,12 @@
 <template>
   <div>
     <div v-if="isGameMaster">
-      <div class="margin_1">
+      <div v-if="remainCounter > 0" class="margin_1">
         残り{{ remainCounter }}枚、役職を増やしてください。
+      </div>
+      <div v-if="remainCounter <= 0" class="margin_1">
+        プレイヤーに配られないカード数は<br>
+        {{ -remainCounter + 2 }}枚です。
       </div>
       <div
         v-for="role in state.roles"
