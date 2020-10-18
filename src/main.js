@@ -19,5 +19,8 @@ new Vue({
   vuetify,
   store,
   // css,
-  render: h => h(App)
+  created () {
+    localStorage.clear();
+  },
+  render: h => h(App),
 }).$mount('#app');

@@ -13,7 +13,7 @@ const store = new Vuex.Store({
   plugins: [ createPersistedState({
     key: "oneNightWerewolf",
     overwrite: true,
-    storage: window.sessionStorage
+    storage: window.localStorage
   }) ]
 });
 export default store;
