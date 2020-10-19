@@ -54,7 +54,7 @@ export default {
     const state = reactive({
       roles: [
         { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
-        { name: "人狼", number: 2, descriptioxn: "村人を欺きましょう" },
+        { name: "人狼", number: 2, description: "村人を欺きましょう" },
         {
           name: "占い師",
           number: 1,
@@ -97,6 +97,7 @@ export default {
       store.dispatch("modules/setRoles", state.roles);
       const sendData = {
         action: "startGame",
+        roomId: store.getters['modules/roomId'],
         roles: state.roles,
         users: store.getters["modules/users"],
         nightPeriodSecond: state.nightPeriodSecond,

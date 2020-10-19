@@ -1,5 +1,9 @@
+type FunctionType = "join" | "roles" | "vote"
+
+type Roles = "人狼" | "占い師" | "怪盗"
+
 type RegisterNameResponse = {
-  type: string,
+  type: FunctionType,
   member: {
     name: string,
     gameMasterFlag: boolean,
@@ -9,6 +13,24 @@ type RegisterNameResponse = {
   room: object
 }
 
+type User = {
+  name: string,
+  number: number,
+  description: string
+}
+
+type StartGameResponse = {
+  type: FunctionType,
+  userRoles: {
+    testName2: Roles,
+    testName1: Roles,
+    notAssigned1: Roles,
+    notAssigned2: Roles
+  },
+  nightPeriodSecond: number,
+  dayPeriodMinute: number
+};
+
 describe('registerName', (): void => {
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
@@ -16,14 +38,16 @@ describe('registerName', (): void => {
   let receivedDataList1: RegisterNameResponse[] = [];
   let receivedDataList2: RegisterNameResponse[] = [];
   let receivedDataList3: RegisterNameResponse[] = [];
-  let roomId: number;
+  let roomId: number = 0;
 
   jest.setTimeout(30000);
 
   socket_1.onmessage = event => {
     console.log('receive1')
     const receivedData = JSON.parse(event.data);
-    roomId = receivedData.member.roomId;
+    if ( roomId === 0 ) {
+      roomId = receivedData.member.roomId;
+    }
     receivedDataList1.push(receivedData);
   };
 
@@ -43,7 +67,7 @@ describe('registerName', (): void => {
   test('ゲームマスターの名前登録。', async () => {
     expect.assertions(4);
 
-    const sendData1 = {
+    const sendData = {
       action: "registerName",
       name: "testName1",
       gameMasterFlag: true,
@@ -52,7 +76,7 @@ describe('registerName', (): void => {
     await new Promise(resolve => setTimeout(resolve, 1000));
     if (1 === socket_1.readyState) {
       console.log('send1')
-      socket_1.send(JSON.stringify(sendData1));
+      socket_1.send(JSON.stringify(sendData));
     }
 
     await new Promise(resolve => setTimeout(resolve, 1000));
@@ -65,7 +89,7 @@ describe('registerName', (): void => {
   test('別のユーザの名前登録', async () => {
     expect.assertions(5);
 
-    const sendData2 = {
+    const sendData = {
       action: "registerName",
       name: "testName2",
       gameMasterFlag: false,
@@ -73,7 +97,7 @@ describe('registerName', (): void => {
     };
     if (1 === socket_2.readyState) {
       console.log('send2')
-      socket_2.send(JSON.stringify(sendData2));
+      socket_2.send(JSON.stringify(sendData));
     }
 
     await new Promise(resolve => setTimeout(resolve, 2000));
@@ -105,6 +129,31 @@ describe('registerName', (): void => {
     expect(receivedDataList3.length).toBe(1);
   });
 
+  test('ゲーム開始', async () => {
+    expect.assertions(5);
+
+    const sendData = {
+      action: "startGame",
+      roomId: roomId,
+      roles: roles,
+      users: ["testName1", "testName2"],
+      nightPeriodSecond: 30,
+      dayPeriodMinute: 3,
+    };
+
+    if (1 === socket_1.readyState) {
+      console.log('startGame')
+      socket_1.send(JSON.stringify(sendData));
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    expect(receivedDataList1[2]).toEqual(expectStartGameResponse1);
+    expect(receivedDataList2[1]).toEqual(expectStartGameResponse1);
+    expect(receivedDataList1.length).toBe(3);
+    expect(receivedDataList2.length).toBe(2);
+    expect(receivedDataList3.length).toBe(1);
+  });
+
   test('websocket server 1 との接続を切断できること.', (done) => {
     expect.assertions(1);
     socket_1.onclose = event => {
@@ -132,6 +181,32 @@ describe('registerName', (): void => {
     socket_3.close();
   });
 })
+
+const roles: User[] = [
+  { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
+  { name: "人狼", number: 2, description: "村人を欺きましょう" },
+  {
+    name: "占い師",
+    number: 1,
+    description: "誰かのカードか余ったカードを確認できます",
+  },
+  { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
+  {
+    name: "軍人",
+    number: 0,
+    description: "村人よりちょっとだけ強いです",
+  },
+  {
+    name: "狂人",
+    number: 0,
+    description: "人狼陣営の勝利があなたの勝利です",
+  },
+  {
+    name: "吊人",
+    number: 0,
+    description: "処刑されるとゲームに勝利します",
+  },
+]
 
 const expectRegisterNameResponse1: RegisterNameResponse = {
   type: "join",
@@ -164,4 +239,16 @@ const expectRegisterNameResponse3: RegisterNameResponse = {
     roomId: expect.any(Number)
   },
   room: expect.any(Object)
+}
+
+const expectStartGameResponse1: StartGameResponse = {
+  type: "roles",
+  userRoles: {
+    testName2: expect.any(String),
+    testName1: expect.any(String),
+    notAssigned1: expect.any(String),
+    notAssigned2: expect.any(String)
+  },
+  nightPeriodSecond: 30,
+  dayPeriodMinute: 3
 }
