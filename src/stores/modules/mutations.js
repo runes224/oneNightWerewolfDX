@@ -1,6 +1,6 @@
 export const mutations = {
-  addUser(state, name) {
-    state.users.push(name);
+  setUsers(state, arr) {
+    state.users = arr;
   },
   registerName(state, obj) {
     state.myName = obj.name;

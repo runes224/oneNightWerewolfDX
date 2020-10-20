@@ -1,6 +1,6 @@
 export const actions = {
-  addUser({commit}, name) {
-    commit('addUser', name);
+  setUsers({commit}, arr) {
+    commit('setUsers', arr);
   },
   registerName({commit}, obj) {
     commit('registerName', obj);

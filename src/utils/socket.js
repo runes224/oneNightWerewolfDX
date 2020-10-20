@@ -52,7 +52,7 @@ const join = (receivedData) => {
   } else {
     addMessage(joinMember.name + "が入室しました。");
   }
-  store.dispatch('modules/addUser', joinMember.name);
+  store.dispatch('modules/setUsers', receivedData.room.users.map(user => user.name));
 };
 
 const roles = (receivedData) => {
