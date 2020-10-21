@@ -31,6 +31,12 @@ type StartGameResponse = {
   dayPeriodMinute: number
 };
 
+type VoteResponse = {
+  type: FunctionType,
+  votedUsers: [],
+  resultOutsideCards: []
+};
+
 describe('registerName', (): void => {
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
@@ -154,6 +160,31 @@ describe('registerName', (): void => {
     expect(receivedDataList3.length).toBe(1);
   });
 
+  test('ゲーム開始', async () => {
+    expect.assertions(5);
+
+    const sendData = {
+      action: "startGame",
+      roomId: roomId,
+      roles: roles,
+      users: ["testName1", "testName2"],
+      nightPeriodSecond: 30,
+      dayPeriodMinute: 3,
+    };
+
+    if (1 === socket_1.readyState) {
+      console.log('startGame')
+      socket_1.send(JSON.stringify(sendData));
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    expect(receivedDataList1[2]).toEqual(expectStartGameResponse1);
+    expect(receivedDataList2[1]).toEqual(expectStartGameResponse1);
+    expect(receivedDataList1.length).toBe(4);
+    expect(receivedDataList2.length).toBe(3);
+    expect(receivedDataList3.length).toBe(1);
+  });
+
   test('websocket server 1 との接続を切断できること.', (done) => {
     expect.assertions(1);
     socket_1.onclose = event => {
@@ -251,4 +282,10 @@ const expectStartGameResponse1: StartGameResponse = {
   },
   nightPeriodSecond: 30,
   dayPeriodMinute: 3
+}
+
+const expectVoteResponse1: VoteResponse = {
+  type: "vote",
+  votedUsers: [],
+  resultOutsideCards: []
 }
