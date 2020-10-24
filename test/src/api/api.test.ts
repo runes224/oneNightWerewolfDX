@@ -48,7 +48,7 @@ type VoteResponse = {
 describe('registerName', (): void => {
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
-  const socket_3 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/pro d");
+  const socket_3 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   let receivedDataList1: (RegisterNameResponse | StartGameResponse | VoteResponse)[] = [];
   let receivedDataList2: (RegisterNameResponse | StartGameResponse | VoteResponse)[] = [];
   let receivedDataList3: (RegisterNameResponse | StartGameResponse | VoteResponse)[] = [];
@@ -187,9 +187,22 @@ describe('registerName', (): void => {
       socket_1.send(JSON.stringify(sendData1));
     }
 
+    const sendData2 = {
+      action: "vote",
+      votedUser: "testName1",
+      role: userRoles.testName2,
+      outsideCards: [{ "name": "qwdq", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "q", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }],
+      roomId: roomId
+    };
+
     await new Promise(resolve => setTimeout(resolve, 3000));
-    expect(receivedDataList1[2]).toEqual(expectStartGameResponse1);
-    expect(receivedDataList2[1]).toEqual(expectStartGameResponse1);
+    if (1 === socket_2.readyState) {
+      socket_2.send(JSON.stringify(sendData2));
+    }
+
+    await new Promise(resolve => setTimeout(resolve, 5000));
+    expect(receivedDataList1[3]).toEqual(expectVoteResponse);
+    expect(receivedDataList2[2]).toEqual(expectVoteResponse);
     expect(receivedDataList1.length).toBe(4);
     expect(receivedDataList2.length).toBe(3);
     expect(receivedDataList3.length).toBe(1);
@@ -294,8 +307,8 @@ const expectStartGameResponse1: StartGameResponse = {
   dayPeriodMinute: 3
 }
 
-const expectVoteResponse1: VoteResponse = {
+const expectVoteResponse: VoteResponse = {
   type: "vote",
-  votedUsers: [],
-  resultOutsideCards: []
+  votedUsers: ["testName2", "testName1"],
+  resultOutsideCards: [{ "name": "qwdq", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "q", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }]
 }
