@@ -28,6 +28,9 @@ export default {
       return this.$store.getters['modules/users'];
     }
   },
+  created () {
+    this.$store.dispatch("modules/clearMessages");
+  },
   methods: {
     required(value) { return !!value || "必ず入力してください";}, // 入力必須の制約
     notDuplicated(value, users) {
