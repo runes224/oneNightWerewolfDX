@@ -45,7 +45,7 @@ type VoteResponse = {
   resultOutsideCards: Card[]
 };
 
-describe('registerName', (): void => {
+describe('api', (): void => {
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_3 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
@@ -55,31 +55,35 @@ describe('registerName', (): void => {
   let roomId: number = 0;
   let userRoles: StartGameResponse["userRoles"];
 
-  jest.setTimeout(30000);
+  jest.setTimeout(20000);
 
   socket_1.onmessage = event => {
-    console.log('receive1')
     const receivedData = JSON.parse(event.data);
-    if (roomId === 0) {
-      roomId = receivedData.member.roomId;
-    }
     receivedDataList1.push(receivedData);
   };
 
   socket_2.onmessage = event => {
-    console.log('receive2')
     const receivedData = JSON.parse(event.data);
     receivedDataList2.push(receivedData);
   }
 
   socket_3.onmessage = event => {
-    console.log('receive3')
     const receivedData = JSON.parse(event.data);
     receivedDataList3.push(receivedData);
   }
 
+  const waitForReceivedData = (totalReceivedData: number, callback: Function) => {
+    setTimeout(
+      () => {
+        if (receivedDataList1.length + receivedDataList2.length + receivedDataList3.length === totalReceivedData) {
+          callback();
+        } else {
+          waitForReceivedData(totalReceivedData, callback);
+        }
+      }, 5);
+  }
 
-  test('ゲームマスターの名前登録。', async () => {
+  test('ゲームマスターの名前登録。', async (done) => {
     expect.assertions(4);
 
     const sendData = {
@@ -88,20 +92,23 @@ describe('registerName', (): void => {
       gameMasterFlag: true,
       roomId: ""
     };
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    if (1 === socket_1.readyState) {
-      console.log('send1')
-      socket_1.send(JSON.stringify(sendData));
-    }
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    expect(receivedDataList1[0]).toEqual(expectRegisterNameResponse1);
-    expect(receivedDataList1.length).toBe(1);
-    expect(receivedDataList2.length).toBe(0);
-    expect(receivedDataList3.length).toBe(0);
+    sendMessage(socket_1, JSON.stringify(sendData));
+
+    const expectTotalReceiveData = 1;
+    waitForReceivedData(expectTotalReceiveData, () => {
+      if ("member" in receivedDataList1[0]) {
+        roomId = receivedDataList1[0].member.roomId;
+      }
+      expect(receivedDataList1[0]).toEqual(expectRegisterNameResponse1);
+      expect(receivedDataList1.length).toBe(1);
+      expect(receivedDataList2.length).toBe(0);
+      expect(receivedDataList3.length).toBe(0);
+      done();
+    })
   });
 
-  test('別のユーザの名前登録', async () => {
+  test('別のユーザの名前登録', async (done) => {
     expect.assertions(5);
 
     const sendData = {
@@ -110,20 +117,20 @@ describe('registerName', (): void => {
       gameMasterFlag: false,
       roomId: roomId
     };
-    if (1 === socket_2.readyState) {
-      console.log('send2')
-      socket_2.send(JSON.stringify(sendData));
-    }
+    sendMessage(socket_2, JSON.stringify(sendData));
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    expect(receivedDataList1[1]).toEqual(expectRegisterNameResponse2);
-    expect(receivedDataList2[0]).toEqual(expectRegisterNameResponse2);
-    expect(receivedDataList1.length).toBe(2);
-    expect(receivedDataList2.length).toBe(1);
-    expect(receivedDataList3.length).toBe(0);
+    const expectTotalReceiveData = 3;
+    waitForReceivedData(expectTotalReceiveData, () => {
+      expect(receivedDataList1[1]).toEqual(expectRegisterNameResponse2);
+      expect(receivedDataList2[0]).toEqual(expectRegisterNameResponse2);
+      expect(receivedDataList1.length).toBe(2);
+      expect(receivedDataList2.length).toBe(1);
+      expect(receivedDataList3.length).toBe(0);
+      done();
+    })
   });
 
-  test('他の部屋のユーザには名前登録時にメッセージが送信されないこと。', async () => {
+  test('他の部屋のユーザには名前登録時にメッセージが送信されないこと。', async (done) => {
     expect.assertions(4);
 
     const sendData = {
@@ -132,19 +139,19 @@ describe('registerName', (): void => {
       gameMasterFlag: true,
       roomId: ""
     };
-    if (1 === socket_3.readyState) {
-      console.log("send3")
-      socket_3.send(JSON.stringify(sendData));
-    }
+    sendMessage(socket_3, JSON.stringify(sendData));
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    expect(receivedDataList3[0]).toEqual(expectRegisterNameResponse3);
-    expect(receivedDataList1.length).toBe(2);
-    expect(receivedDataList2.length).toBe(1);
-    expect(receivedDataList3.length).toBe(1);
+    const expectTotalReceiveData = 4;
+    waitForReceivedData(expectTotalReceiveData, () => {
+      expect(receivedDataList3[0]).toEqual(expectRegisterNameResponse3);
+      expect(receivedDataList1.length).toBe(2);
+      expect(receivedDataList2.length).toBe(1);
+      expect(receivedDataList3.length).toBe(1);
+      done();
+    })
   });
 
-  test('ゲーム開始', async () => {
+  test('ゲーム開始', async (done) => {
     expect.assertions(5);
 
     const sendData = {
@@ -155,24 +162,23 @@ describe('registerName', (): void => {
       nightPeriodSecond: 30,
       dayPeriodMinute: 3,
     };
+    sendMessage(socket_1, JSON.stringify(sendData));
 
-    if (1 === socket_1.readyState) {
-      console.log('startGame')
-      socket_1.send(JSON.stringify(sendData));
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    if ("userRoles" in receivedDataList1[2]) {
-      userRoles = receivedDataList1[2].userRoles;
-    }
-    expect(receivedDataList1[2]).toEqual(expectStartGameResponse1);
-    expect(receivedDataList2[1]).toEqual(expectStartGameResponse1);
-    expect(receivedDataList1.length).toBe(3);
-    expect(receivedDataList2.length).toBe(2);
-    expect(receivedDataList3.length).toBe(1);
+    const expectTotalReceiveData = 6;
+    waitForReceivedData(expectTotalReceiveData, () => {
+      if ("userRoles" in receivedDataList1[2]) {
+        userRoles = receivedDataList1[2].userRoles;
+      }
+      expect(receivedDataList1[2]).toEqual(expectStartGameResponse1);
+      expect(receivedDataList2[1]).toEqual(expectStartGameResponse1);
+      expect(receivedDataList1.length).toBe(3);
+      expect(receivedDataList2.length).toBe(2);
+      expect(receivedDataList3.length).toBe(1);
+      done();
+    })
   });
 
-  test('投票', async () => {
+  test('投票', async (done) => {
     expect.assertions(5);
 
     const sendData1 = {
@@ -183,9 +189,7 @@ describe('registerName', (): void => {
       roomId: roomId
     };
 
-    if (1 === socket_1.readyState) {
-      socket_1.send(JSON.stringify(sendData1));
-    }
+    sendMessage(socket_1, JSON.stringify(sendData1));
 
     const sendData2 = {
       action: "vote",
@@ -195,17 +199,19 @@ describe('registerName', (): void => {
       roomId: roomId
     };
 
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    if (1 === socket_2.readyState) {
-      socket_2.send(JSON.stringify(sendData2));
-    }
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    sendMessage(socket_2, JSON.stringify(sendData2));
 
-    await new Promise(resolve => setTimeout(resolve, 5000));
-    expect(receivedDataList1[3]).toEqual(expectVoteResponse);
-    expect(receivedDataList2[2]).toEqual(expectVoteResponse);
-    expect(receivedDataList1.length).toBe(4);
-    expect(receivedDataList2.length).toBe(3);
-    expect(receivedDataList3.length).toBe(1);
+    const expectTotalReceiveData = 8;
+
+    waitForReceivedData(expectTotalReceiveData, () => {
+      expect(receivedDataList1[3]).toEqual(expectVoteResponse);
+      expect(receivedDataList2[2]).toEqual(expectVoteResponse);
+      expect(receivedDataList1.length).toBe(4);
+      expect(receivedDataList2.length).toBe(3);
+      expect(receivedDataList3.length).toBe(1);
+      done();
+    })
   });
 
   test('websocket server 1 との接続を切断できること.', (done) => {
@@ -235,6 +241,23 @@ describe('registerName', (): void => {
     socket_3.close();
   });
 })
+
+const sendMessage = (socket: WebSocket, msg: string) => {
+  waitForSocketConnection(socket, function () {
+    socket.send(msg);
+  });
+}
+
+const waitForSocketConnection = (socket: WebSocket, callback: Function) => {
+  setTimeout(
+    () => {
+      if (socket.readyState === 1) {
+        callback();
+      } else {
+        waitForSocketConnection(socket, callback);
+      }
+    }, 5);
+}
 
 const roles: User[] = [
   { name: "村人", number: 0, description: "狼の嘘を見破りましょう" },
@@ -310,5 +333,5 @@ const expectStartGameResponse1: StartGameResponse = {
 const expectVoteResponse: VoteResponse = {
   type: "vote",
   votedUsers: ["testName2", "testName1"],
-  resultOutsideCards: [{ "name": "qwdq", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "q", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }]
+  resultOutsideCards: expect.any(Array)
 }
