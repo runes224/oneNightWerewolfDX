@@ -199,7 +199,6 @@ describe('api', (): void => {
       roomId: roomId
     };
 
-    await new Promise(resolve => setTimeout(resolve, 1000));
     sendMessage(socket_2, JSON.stringify(sendData2));
 
     const expectTotalReceiveData = 8;
