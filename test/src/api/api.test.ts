@@ -46,6 +46,7 @@ type VoteResponse = {
 };
 
 describe('api', (): void => {
+  // TODO: 環境変数に切り出す
   const socket_1 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_2 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
   const socket_3 = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
@@ -55,20 +56,32 @@ describe('api', (): void => {
   let roomId: number = 0;
   let userRoles: StartGameResponse["userRoles"];
 
-  jest.setTimeout(20000);
+  jest.setTimeout(10000);
 
   socket_1.onmessage = event => {
-    const receivedData = JSON.parse(event.data);
+    let receivedData = JSON.parse(event.data);
+    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
+      receivedData.votedUsers = receivedData.votedUsers.sort();
+      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
+    }
     receivedDataList1.push(receivedData);
   };
 
   socket_2.onmessage = event => {
-    const receivedData = JSON.parse(event.data);
+    let receivedData = JSON.parse(event.data);
+    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
+      receivedData.votedUsers = receivedData.votedUsers.sort();
+      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
+    }
     receivedDataList2.push(receivedData);
   }
 
   socket_3.onmessage = event => {
-    const receivedData = JSON.parse(event.data);
+    let receivedData = JSON.parse(event.data);
+    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
+      receivedData.votedUsers = receivedData.votedUsers.sort();
+      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
+    }
     receivedDataList3.push(receivedData);
   }
 
@@ -331,6 +344,6 @@ const expectStartGameResponse1: StartGameResponse = {
 
 const expectVoteResponse: VoteResponse = {
   type: "vote",
-  votedUsers: ["testName2", "testName1"],
+  votedUsers: ["testName1", "testName2"],
   resultOutsideCards: expect.any(Array)
 }
