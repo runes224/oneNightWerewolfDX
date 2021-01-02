@@ -5,54 +5,48 @@ const ddb = new AWS.DynamoDB.DocumentClient({ apiVersion: '2012-08-10', region: 
 const werewolf_connections = "werewolf_connections";
 const table_rooms = "werewolf_rooms";
 
-exports.handler = async(event) => {
+exports.handler = async (event) => {
 
   const votedUser = JSON.parse(event.body).votedUser;
   const role = JSON.parse(event.body).role;
   const outsideCards = JSON.parse(event.body).outsideCards;
   const roomId = Number(JSON.parse(event.body).roomId);
-  let room;
+  // let room;
   let resultOutsideCards = [];
 
   if (role === "怪盗") {
     resultOutsideCards = outsideCards;
   }
 
+  let params = {
+    TableName: table_rooms,
+    Key: {
+      "roomId": roomId
+    },
+    ExpressionAttributeNames: { '#lockFlag': 'lockFlag' },
+    ExpressionAttributeValues: { ':false': false, ':true': true },
+    ConditionExpression: "#lockFlag = :false",
+    UpdateExpression: 'SET #lockFlag = :true'
+  };
+  let res = null;
+  while (res === null) {
+    res = await updateRecord(params);
+  }
+
   // ユーザの数を取得する
+  let room;
   let users = [];
   let votedUsers = [];
   const roomsParam = {
     TableName: table_rooms,
     Key: {
       roomId: roomId
-    }
+    },
+    ConsistentRead: true
   };
   try {
     room = await getRecord(roomsParam);
-    console.log("room.Item.lockFlag");
-    console.log(room.Item.lockFlag);
-    while (room.Item.lockFlag) {
-      room = await getRecord(roomsParam);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-    let putParamsWerewolfRooms = {
-      TableName: table_rooms,
-      Item: {
-        roomId: roomId,
-        users: room.Item.users,
-        votedUsers: room.Item.votedUsers,
-        resultOutsideCards: room.Item.resultOutsideCards,
-        lockFlag: true,
-      }
-    };
-    room.Item.lockFlag = true;
-    try {
-      await ddb.put(putParamsWerewolfRooms).promise();
-    }
-    catch (err) {
-      console.log("faill");
-      return { statusCode: 500, body: 'Failed to connect: ' + JSON.stringify(err) };
-    }
+    // ユーザ全員の数を把握する
     users = room.Item.users;
     if (room.Item.votedUsers !== null) votedUsers = room.Item.votedUsers;
     if (room.Item.resultOutsideCards !== null && room.Item.resultOutsideCards.length !== 0) resultOutsideCards = room.Item.resultOutsideCards;
@@ -64,24 +58,20 @@ exports.handler = async(event) => {
 
   votedUsers.push(votedUser);
 
+  // ユーザ全員が投票してたら、メッセージ送信
   if (users.length === votedUsers.length) {
-    console.log("メッセージ送信");
-
     let postData = {
       type: "vote",
       votedUsers: votedUsers,
       resultOutsideCards: resultOutsideCards
     };
 
-    console.log("postData");
-    console.log(postData);
-
     const apigwManagementApi = new AWS.ApiGatewayManagementApi({
       apiVersion: '2018-11-29',
       endpoint: event.requestContext.domainName + '/' + event.requestContext.stage
     });
 
-    const postCalls = room.Item.users.map(async({ connectionId }) => {
+    const postCalls = room.Item.users.map(async ({ connectionId }) => {
       try {
         await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: JSON.stringify(postData) }).promise();
       }
@@ -105,35 +95,6 @@ exports.handler = async(event) => {
     votedUsers = [];
     resultOutsideCards = [];
   }
-  // const params = {
-  //   TableName: table_rooms,
-  //   Key: {
-  //     roomId: roomId
-  //   },
-  //   UpdateExpression: 'ADD #votedUsers = :addUsers, SET #resultOutsideCards = :setResultOutsideCards',
-  //   ExpressionAttributeNames: {
-  //     '#votedUsers': 'votedUsers',
-  //     '#resultOutsideCards': 'resultOutsideCards',
-  //   },
-  //   ExpressionAttributeValues: {
-  //     ':addUsers': ddb.createSet(["test"]),
-  //     // ':addUsers': ddb.createSet([votedUser]),
-  //     // ':setResultOutsideCards': resultOutsideCards,
-  //     ':setResultOutsideCards': "test",
-  //   }
-  // };
-
-  // await ddb.update(params, function(err, data) {
-  //   if (err) {
-  //     console.log("err");
-  //     console.log(err);
-  //   }
-  //   else {
-  //     console.log("data");
-  //     console.log(data);
-
-  //   }
-  // });
 
   let putParamsWerewolfRooms = {
     TableName: table_rooms,
@@ -146,7 +107,6 @@ exports.handler = async(event) => {
     }
   };
   try {
-    console.log("post");
     await ddb.put(putParamsWerewolfRooms).promise();
   }
   catch (err) {
@@ -158,7 +118,7 @@ exports.handler = async(event) => {
 function getRecord(params) {
   return new Promise((resolve, reject) => {
 
-    ddb.get(params, function(err, data) {
+    ddb.get(params, function (err, data) {
       if (err) {
         console.log("getRecord(params) ERROR");
         reject(err);
@@ -169,4 +129,19 @@ function getRecord(params) {
       }
     });
   });
+}
+
+
+async function updateRecord(params) {
+  try {
+    console.log("set a lockFlag");
+    return await ddb.update(params).promise();
+  } catch (e) {
+    if (e.code === 'ConditionalCheckFailedException') {
+      console.log('ConditionalCheckFailedException');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      return null;
+    }
+    throw e;
+  }
 }
