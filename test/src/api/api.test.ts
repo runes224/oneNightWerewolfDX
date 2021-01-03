@@ -59,30 +59,15 @@ describe('api', (): void => {
   jest.setTimeout(10000);
 
   socket_1.onmessage = event => {
-    let receivedData = JSON.parse(event.data);
-    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
-      receivedData.votedUsers = receivedData.votedUsers.sort();
-      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
-    }
-    receivedDataList1.push(receivedData);
+    receivedDataList1.push(convertEventData(event));
   };
 
   socket_2.onmessage = event => {
-    let receivedData = JSON.parse(event.data);
-    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
-      receivedData.votedUsers = receivedData.votedUsers.sort();
-      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
-    }
-    receivedDataList2.push(receivedData);
+    receivedDataList2.push(convertEventData(event));
   }
 
   socket_3.onmessage = event => {
-    let receivedData = JSON.parse(event.data);
-    if ('votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
-      receivedData.votedUsers = receivedData.votedUsers.sort();
-      receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
-    }
-    receivedDataList3.push(receivedData);
+    receivedDataList3.push(convertEventData(event));
   }
 
   const waitForReceivedData = (totalReceivedData: number, callback: Function) => {
@@ -253,6 +238,15 @@ describe('api', (): void => {
     socket_3.close();
   });
 })
+
+const convertEventData = (ev: MessageEvent<any>) => {
+  let receivedData = JSON.parse(ev.data);
+  if (receivedData && 'votedUsers' in receivedData && 'resultOutsideCards' in receivedData) {
+    receivedData.votedUsers = receivedData.votedUsers.sort();
+    receivedData.resultOutsideCards = receivedData.resultOutsideCards.sort();
+  }
+  return receivedData;
+}
 
 const sendMessage = (socket: WebSocket, msg: string) => {
   waitForSocketConnection(socket, function () {
