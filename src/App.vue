@@ -1,6 +1,9 @@
 <template>
   <v-app>
-    <AppHeader :register-room-id-flag="roomId !== 0" :room-id="Number(roomId)"></AppHeader>
+    <AppHeader
+      :register-room-id-flag="roomId !== 0"
+      :room-id="Number(roomId)"
+    ></AppHeader>
     <v-container>
       <div id="app">
         <button v-if="!isConnected" @click="connect">接続</button>
@@ -21,17 +24,17 @@ export default {
   name: "App",
   components: {
     AppHeader,
-    MessageBox,
+    MessageBox
   },
   computed: {
     isConnected() {
       return this.$websocket !== null;
     },
     roomId() {
-      return this.$store.getters['modules/roomId'];
+      return this.$store.getters["modules/roomId"];
     },
     messages() {
-      return this.$store.getters['modules/messages'];
+      return this.$store.getters["modules/messages"];
     }
   }
 };

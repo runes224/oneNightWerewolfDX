@@ -119,7 +119,7 @@ const roles = (receivedData) => {
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
   router.push('/playingGame').catch(() => {
-    router.go({path: router.currentRoute.path, force: true});
+    router.go({ path: router.currentRoute.path, force: true });
   });
 };
 

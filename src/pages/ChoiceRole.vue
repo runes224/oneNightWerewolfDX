@@ -5,14 +5,10 @@
         残り{{ remainCounter }}枚、役職を増やしてください。
       </div>
       <div v-if="remainCounter <= 0" class="margin_1">
-        プレイヤーに配られないカードの数は<br>
+        プレイヤーに配られないカードの数は<br />
         {{ -remainCounter + 2 }}枚です。
       </div>
-      <div
-        v-for="role in state.roles"
-        :key="role.name"
-        class="input-area"
-      >
+      <div v-for="role in state.roles" :key="role.name" class="input-area">
         <div class="role-name">{{ role.name }}：</div>
         <number-input-spinner
           v-model="role.number"
@@ -25,14 +21,18 @@
       <div class="margin_1">
         <div class="input-area">
           <label>夜の時間：</label>
-          <input v-model="state.nightPeriodSecond" label="Standard">秒
+          <input v-model="state.nightPeriodSecond" label="Standard" />秒
         </div>
         <div class="input-area">
           <label>昼の時間：</label>
-          <input v-model="state.dayPeriodMinute" label="Standard">分
+          <input v-model="state.dayPeriodMinute" label="Standard" />分
         </div>
       </div>
-      <v-btn color="primary" class="margin_1" style="margin-top: 0;" @click="startGame"
+      <v-btn
+        color="primary"
+        class="margin_1"
+        style="margin-top: 0"
+        @click="startGame"
         >ゲーム開始</v-btn
       >
     </div>
@@ -58,27 +58,27 @@ export default {
         {
           name: "占い師",
           number: 1,
-          description: "誰かのカードか余ったカードを確認できます",
+          description: "誰かのカードか余ったカードを確認できます"
         },
         { name: "怪盗", number: 1, description: "誰かのカードと交換できます" },
         {
           name: "軍人",
           number: 0,
-          description: "村人よりちょっとだけ強いです",
+          description: "村人よりちょっとだけ強いです"
         },
         {
           name: "狂人",
           number: 0,
-          description: "人狼陣営の勝利があなたの勝利です",
+          description: "人狼陣営の勝利があなたの勝利です"
         },
         {
           name: "吊人",
           number: 0,
-          description: "処刑されるとゲームに勝利します",
-        },
+          description: "処刑されるとゲームに勝利します"
+        }
       ],
       nightPeriodSecond: store.getters["modules/nightPeriodSecond"],
-      dayPeriodMinute: store.getters["modules/dayPeriodMinute"],
+      dayPeriodMinute: store.getters["modules/dayPeriodMinute"]
     });
 
     const remainCounter = computed(() => {
@@ -97,17 +97,17 @@ export default {
       store.dispatch("modules/setRoles", state.roles);
       const sendData = {
         action: "startGame",
-        roomId: store.getters['modules/roomId'],
+        roomId: store.getters["modules/roomId"],
         roles: state.roles,
         users: store.getters["modules/users"],
         nightPeriodSecond: state.nightPeriodSecond,
-        dayPeriodMinute: state.dayPeriodMinute,
+        dayPeriodMinute: state.dayPeriodMinute
       };
       websocket.send(JSON.stringify(sendData));
     };
 
     return { state, remainCounter, isGameMaster, startGame };
-  },
+  }
 };
 </script>
 

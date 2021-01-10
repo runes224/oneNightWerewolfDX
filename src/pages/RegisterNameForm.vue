@@ -1,11 +1,24 @@
 <template>
   <div>
     <v-row justify="center" class="form">
-      <v-switch v-model="createNewRoomFlag" label="新しく部屋を作成する" class="input_new_room_flag"></v-switch>
+      <v-switch
+        v-model="createNewRoomFlag"
+        label="新しく部屋を作成する"
+        class="input_new_room_flag"
+      ></v-switch>
       <div class="register">
         <v-form ref="register_name_form" class="input_name">
-          <v-text-field v-if="!createNewRoomFlag" v-model="roomId" label="ルームIDを入力して下さい" :rules="[onlyNumbers]"></v-text-field>
-          <v-text-field v-model="name" label="名前を入力してください" :rules="[required, notDuplicated(users)]"></v-text-field>
+          <v-text-field
+            v-if="!createNewRoomFlag"
+            v-model="roomId"
+            label="ルームIDを入力して下さい"
+            :rules="[onlyNumbers]"
+          ></v-text-field>
+          <v-text-field
+            v-model="name"
+            label="名前を入力してください"
+            :rules="[required, notDuplicated(users)]"
+          ></v-text-field>
         </v-form>
         <v-btn class="btn" @click="registerName">送信</v-btn>
       </div>
@@ -18,25 +31,38 @@ export default {
   name: "ChoiceRole",
   data() {
     return {
-      name: '',
-      roomId: '',
+      name: "",
+      roomId: "",
       createNewRoomFlag: true
     };
   },
-    computed: {
+  computed: {
     users() {
-      return this.$store.getters['modules/users'];
+      return this.$store.getters["modules/users"];
     }
   },
-  created () {
+  created() {
     this.$store.dispatch("modules/clearMessages");
   },
   methods: {
-    required(value) { return !!value || "必ず入力してください";}, // 入力必須の制約
-    notDuplicated(value, users) {
-      return users === undefined || users.filter(user => user === value).length === 0 || "他のユーザと名前が重複しています";
+    required(value) {
+      return !!value || "必ず入力してください";
     }, // 入力必須の制約
-    onlyNumbers(value) { return (Number.isInteger(Number(value)) && Number(value) < 100000 && Number(value) > 10000) || "整数5桁で入力してください";}, // 数字5桁のみ
+    notDuplicated(value, users) {
+      return (
+        users === undefined ||
+        users.filter((user) => user === value).length === 0 ||
+        "他のユーザと名前が重複しています"
+      );
+    }, // 入力必須の制約
+    onlyNumbers(value) {
+      return (
+        (Number.isInteger(Number(value)) &&
+          Number(value) < 100000 &&
+          Number(value) > 10000) ||
+        "整数5桁で入力してください"
+      );
+    }, // 数字5桁のみ
     registerName() {
       if (!this.$refs.register_name_form.validate()) {
         return;
@@ -48,11 +74,14 @@ export default {
         roomId: this.roomId
       };
       this.$websocket.send(JSON.stringify(sendData));
-      if (this.roomId !== '') {
-        this.$store.dispatch('modules/setRoomId', this.roomId);
+      if (this.roomId !== "") {
+        this.$store.dispatch("modules/setRoomId", this.roomId);
       }
-      this.$store.dispatch('modules/registerName', { name: this.name, gameMasterFlag: this.createNewRoomFlag });
-      this.$router.push('/choiceRole');
+      this.$store.dispatch("modules/registerName", {
+        name: this.name,
+        gameMasterFlag: this.createNewRoomFlag
+      });
+      this.$router.push("/choiceRole");
     }
   }
 };
@@ -60,7 +89,7 @@ export default {
 
 <style scoped>
 .btn {
-  margin-top:1.2rem;
+  margin-top: 1.2rem;
   margin-left: 1rem;
 }
 
@@ -69,11 +98,10 @@ export default {
 }
 
 .input_new_room_flag {
-  height: 2.4rem
+  height: 2.4rem;
 }
 
 .input_name {
   width: 15rem;
 }
-
 </style>

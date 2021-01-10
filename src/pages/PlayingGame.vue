@@ -1,10 +1,21 @@
 <template>
   <div class="direction-column">
     <header class="margin_5">
-      <Timer :night-period-second="Number(nightPeriodSecond)" :day-period-minute="Number(dayPeriodMinute)" @start-voting="startVoting()"></Timer>
-      <VoteUser v-if="state.startVotingFlag" :other-users="otherUsers" :my-role="myRole" @end-voting="endVoting()"></VoteUser>
+      <Timer
+        :night-period-second="Number(nightPeriodSecond)"
+        :day-period-minute="Number(dayPeriodMinute)"
+        @start-voting="startVoting()"
+      ></Timer>
+      <VoteUser
+        v-if="state.startVotingFlag"
+        :other-users="otherUsers"
+        :my-role="myRole"
+        @end-voting="endVoting()"
+      ></VoteUser>
       <v-row v-if="state.finishGameFlag && gameMasterFlag" justify="center">
-        <v-btn color="red lighten-2" dark @click="nextGame">次のゲームに進む</v-btn>
+        <v-btn color="red lighten-2" dark @click="nextGame"
+          >次のゲームに進む</v-btn
+        >
       </v-row>
     </header>
     <div id="inside-cards">
@@ -27,7 +38,9 @@
       >
         <div class="card" :class="card.design"></div>
         {{ card.name }}
-        <span v-if="state.finishGameFlag" style="color: black; font-weight: initial"
+        <span
+          v-if="state.finishGameFlag"
+          style="color: black; font-weight: initial"
           >投票数：{{ card.votedNum }}</span
         >
       </div>
@@ -43,7 +56,7 @@ import { reactive, computed } from "@vue/composition-api";
 export default {
   components: {
     Timer,
-    VoteUser,
+    VoteUser
   },
   setup(props, context) {
     const store = context.root.$store;
@@ -51,10 +64,10 @@ export default {
 
     const state = reactive({
       insideCards: computed(() => store.getters["modules/insideCards"]),
-      outsideCards: computed(() =>store.getters["modules/outsideCards"]),
-      finishGameFlag: computed(() =>store.getters["modules/isFinishedGame"]),
+      outsideCards: computed(() => store.getters["modules/outsideCards"]),
+      finishGameFlag: computed(() => store.getters["modules/isFinishedGame"]),
       doneNightActionFlag: false,
-      startVotingFlag: false,
+      startVotingFlag: false
     });
 
     const myName = store.getters["modules/myName"];
@@ -128,7 +141,9 @@ export default {
 
     const endVoting = () => {
       clearMessages();
-      addMessage("投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。");
+      addMessage(
+        "投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。"
+      );
       state.startVotingFlag = false;
     };
 
@@ -142,7 +157,7 @@ export default {
 
     const nextGame = () => {
       clearMessages();
-      router.push('/choiceRole');
+      router.push("/choiceRole");
     };
 
     return {
@@ -159,7 +174,7 @@ export default {
       endVoting,
       nextGame
     };
-  },
+  }
 };
 </script>
 
