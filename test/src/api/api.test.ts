@@ -183,7 +183,7 @@ describe('api', (): void => {
       action: "vote",
       votedUser: "testName2",
       role: userRoles.testName1,
-      outsideCards: [{ "name": "qwdq", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "q", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }],
+      outsideCards: [{ "name": "testName1", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "testName2", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }],
       roomId: roomId
     };
 
@@ -193,7 +193,7 @@ describe('api', (): void => {
       action: "vote",
       votedUser: "testName1",
       role: userRoles.testName2,
-      outsideCards: [{ "name": "qwdq", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "q", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }],
+      outsideCards: [{ "name": "testName1", "role": "怪盗", "design": "back", "num": 0, "votedNum": 0 }, { "name": "testName2", "role": "人狼", "design": "人狼", "num": 1, "votedNum": 0 }],
       roomId: roomId
     };
 
