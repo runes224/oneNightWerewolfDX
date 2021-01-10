@@ -159,6 +159,9 @@ const vote = (receivedData) => {
       "村人陣営のユーザが処刑されたので人狼陣営の勝利です"
     );
   }
+  if (!store.getters['modules/isGameMaster']) {
+    addMessage("ゲームマスターが操作中です。しばらくお待ちください");
+  }
   insideCards.map(card => card.design = card.role);
   resultOutsideCards.map(card => card.design = card.role);
   store.dispatch('modules/setInsideCards', insideCards);
