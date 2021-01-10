@@ -7,8 +7,6 @@ const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazon
 const emitter = new Vue({
   methods: {
     send(message) {
-      console.log('send');
-      console.log(message);
       if (1 === socket.readyState) {
         socket.send(message);
       }
@@ -17,9 +15,7 @@ const emitter = new Vue({
 });
 
 socket.onmessage = msg => {
-  console.log('received');
   const receivedData = JSON.parse(msg.data);
-  console.log(receivedData);
   switch (receivedData.type) {
     case "join":
       join(receivedData);
@@ -37,7 +33,6 @@ socket.onmessage = msg => {
 };
 
 const join = (receivedData) => {
-  console.log("join");
   const joinMember = receivedData.member;
   const gameMasterFlag = store.getters['modules/isGameMaster'];
   const roomId = store.getters['modules/roomId'];
