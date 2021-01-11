@@ -35,8 +35,15 @@ export const mutations = {
   },
   finishGame(state) {
     state.finishedGameFlag = true;
+    state.doneNightActionFlag = false;
   },
   startGame(state) {
     state.finishedGameFlag = false;
+  },
+  setVoteState(state, bool) {
+    state.startVotingFlag = bool;
+  },
+  doneNightAction(state) {
+    state.doneNightActionFlag = true;
   }
 };

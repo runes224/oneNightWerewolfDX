@@ -66,8 +66,8 @@ export default {
       insideCards: computed(() => store.getters["modules/insideCards"]),
       outsideCards: computed(() => store.getters["modules/outsideCards"]),
       finishGameFlag: computed(() => store.getters["modules/isFinishedGame"]),
-      doneNightActionFlag: false,
-      startVotingFlag: false
+      doneNightActionFlag: computed(() => store.getters["modules/isDoneNightAction"]),
+      startVotingFlag: computed(() => store.getters["modules/isStartVoting"])
     });
 
     const myName = store.getters["modules/myName"];
@@ -96,7 +96,8 @@ export default {
           addMessage("中央の伏せカード" + (index + 1) + ":" + card.role);
         }
       }
-      state.doneNightActionFlag = true;
+      store.dispatch("modules/doneNightAction");
+      // state.doneNightActionFlag = true;
     };
 
     const nightActionOutside = (choicedCard) => {
@@ -128,7 +129,8 @@ export default {
           myCard.name + "さんのカード（" + choicedCard.role + "）と交換しました"
         );
       }
-      state.doneNightActionFlag = true;
+      // state.doneNightActionFlag = true;
+      store.dispatch("modules/doneNightAction");
       store.dispatch("modules/setInsideCards", state.insideCards);
       store.dispatch("modules/setOutsideCards", state.outsideCards);
     };
@@ -136,7 +138,8 @@ export default {
     const startVoting = () => {
       clearMessages();
       addMessage("議論の時間が終わりました。投票をしてください。");
-      state.startVotingFlag = true;
+      store.dispatch("modules/setVoteState", true);
+      // state.startVotingFlag = true;
     };
 
     const endVoting = () => {
@@ -144,7 +147,8 @@ export default {
       addMessage(
         "投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。"
       );
-      state.startVotingFlag = false;
+      store.dispatch("modules/setVoteState", false);
+      // state.startVotingFlag = false;
     };
 
     const addMessage = (message) => {

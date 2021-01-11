@@ -3,6 +3,8 @@ export default {
   myRole: '',
   gameMasterFlag: false,
   finishedGameFlag: false,
+  doneNightActionFlag: false,
+  startVotingFlag: false,
   roomId: 0,
   nightPeriodSecond: 20,
   dayPeriodMinute: 5,

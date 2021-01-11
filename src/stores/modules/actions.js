@@ -37,5 +37,11 @@ export const actions = {
   },
   clearMessages({commit}) {
     commit('clearMessages');
+  },
+  setVoteState({commit}, bool) {
+    commit('setVoteState', bool);
+  },
+  doneNightAction({commit}) {
+    commit('doneNightAction');
   }
 };

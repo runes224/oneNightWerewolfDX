@@ -113,12 +113,14 @@ const roles = (receivedData) => {
   store.dispatch('modules/setMyRole', myRole);
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
-  router.push('/playingGame').catch(() => {
-    router.go({ path: router.currentRoute.path, force: true });
-  });
+  router.push('/playingGame');
+  // router.push('/playingGame').catch(() => {
+  //   router.go({ path: router.currentRoute.path, force: true });
+  // });
 };
 
 const vote = (receivedData) => {
+  console.log("voted");
   let votedUsers = receivedData.votedUsers;
   let resultOutsideCards = receivedData.resultOutsideCards;
   const insideCards = store.getters["modules/insideCards"];

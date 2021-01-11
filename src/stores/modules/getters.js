@@ -37,5 +37,11 @@ export const getters = {
   },
   isFinishedGame(state) {
     return state.finishedGameFlag;
+  },
+  isDoneNightAction(state) {
+    return state.doneNightActionFlag;
+  },
+  isStartVoting(state) {
+    return state.startVotingFlag;
   }
 };
