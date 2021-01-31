@@ -8,6 +8,7 @@ export default {
   roomId: 0,
   nightPeriodSecond: 20,
   dayPeriodMinute: 5,
+  gameCount: 0,
   users: [],
   roles: [],
   messages: [],

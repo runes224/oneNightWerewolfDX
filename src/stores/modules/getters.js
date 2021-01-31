@@ -43,5 +43,8 @@ export const getters = {
   },
   isStartVoting(state) {
     return state.startVotingFlag;
+  },
+  getGameCount(state) {
+    return state.gameCount;
   }
 };

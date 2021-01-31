@@ -39,6 +39,7 @@ export const mutations = {
   },
   startGame(state) {
     state.finishedGameFlag = false;
+    state.gameCount++;
   },
   setVoteState(state, bool) {
     state.startVotingFlag = bool;

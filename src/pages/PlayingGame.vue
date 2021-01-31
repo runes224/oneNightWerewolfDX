@@ -2,6 +2,7 @@
   <div class="direction-column">
     <header class="margin_5">
       <Timer
+        :key="state.gameCount"
         :night-period-second="Number(nightPeriodSecond)"
         :day-period-minute="Number(dayPeriodMinute)"
         @start-voting="startVoting()"
@@ -67,7 +68,8 @@ export default {
       outsideCards: computed(() => store.getters["modules/outsideCards"]),
       finishGameFlag: computed(() => store.getters["modules/isFinishedGame"]),
       doneNightActionFlag: computed(() => store.getters["modules/isDoneNightAction"]),
-      startVotingFlag: computed(() => store.getters["modules/isStartVoting"])
+      startVotingFlag: computed(() => store.getters["modules/isStartVoting"]),
+      gameCount: computed(() => store.getters["modules/getGameCount"])
     });
 
     const myName = store.getters["modules/myName"];
@@ -97,7 +99,6 @@ export default {
         }
       }
       store.dispatch("modules/doneNightAction");
-      // state.doneNightActionFlag = true;
     };
 
     const nightActionOutside = (choicedCard) => {
@@ -129,7 +130,6 @@ export default {
           myCard.name + "さんのカード（" + choicedCard.role + "）と交換しました"
         );
       }
-      // state.doneNightActionFlag = true;
       store.dispatch("modules/doneNightAction");
       store.dispatch("modules/setInsideCards", state.insideCards);
       store.dispatch("modules/setOutsideCards", state.outsideCards);
@@ -139,7 +139,6 @@ export default {
       clearMessages();
       addMessage("議論の時間が終わりました。投票をしてください。");
       store.dispatch("modules/setVoteState", true);
-      // state.startVotingFlag = true;
     };
 
     const endVoting = () => {
@@ -148,7 +147,6 @@ export default {
         "投票が完了しました。他のプレイヤーの操作が完了するまでお待ちください。"
       );
       store.dispatch("modules/setVoteState", false);
-      // state.startVotingFlag = false;
     };
 
     const addMessage = (message) => {
@@ -176,7 +174,7 @@ export default {
       isMyCard,
       startVoting,
       endVoting,
-      nextGame
+      nextGame,
     };
   }
 };
