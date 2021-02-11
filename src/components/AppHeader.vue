@@ -31,12 +31,16 @@ export default {
     roomId: {
       type: Number,
       default: 0
-    },
-  },
-  methods: {
-    onCopy: function () {
-      alert("ルームIDをコピーしました！");
     }
+  },
+  setup() {
+    const onCopy = () => {
+      alert("ルームIDをコピーしました！");
+    };
+
+    return {
+      onCopy
+    };
   }
 };
 </script>

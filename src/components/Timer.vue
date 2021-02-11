@@ -6,6 +6,8 @@
 </template>
 
 <script>
+import { reactive, computed, onMounted } from "@vue/composition-api";
+
 export default {
   name: "Timer",
   props: {
@@ -16,72 +18,74 @@ export default {
     dayPeriodMinute: {
       type: Number,
       default: 5
-    },
+    }
   },
-  data() {
-    return {
+  setup(props, context) {
+    const store = store;
+
+    const state = reactive({
       min: 0,
-      sec: this.nightPeriodSecond,
+      sec: props.nightPeriodSecond,
       timerObj: null,
-      doneNightActionFlag: false,
-    };
-  },
-  computed: {
-    formatTime: function() {
-      let timeStrings = [this.min.toString(), this.sec.toString()].map(function(
-        str
-      ) {
-        if (str.length < 2) {
-          return "0" + str;
-        } else {
-          return str;
+      doneNightActionFlag: false
+    });
+
+    const formatTime = computed(() => {
+      let timeStrings = [state.min.toString(), state.sec.toString()].map(
+        function (str) {
+          if (str.length < 2) {
+            return "0" + str;
+          } else {
+            return str;
+          }
         }
-      });
+      );
       return timeStrings[0] + ":" + timeStrings[1];
-    },
-    isShowTime: function() {
-      return this.min + this.sec > 0;
-    }
-  },
-  watch: {
-    second: {
-      immediate: true,
-      handler: function() {
-        this.start();
-      }
-    }
-  },
-  methods: {
-    count: function() {
-      if (this.sec <= 0 && this.min >= 1) {
-        this.min--;
-        this.sec = 59;
-      } else if (this.sec <= 0 && this.min <= 0) {
-        if (this.doneNightActionFlag === true) {
-          clearTimeout(this.timerObj);
-          this.$emit('start-voting');
+    });
+
+    const isShowTime = computed(() => {
+      return state.min + state.sec > 0;
+    });
+
+    const count = () => {
+      if (state.sec <= 0 && state.min >= 1) {
+        state.min--;
+        state.sec = 59;
+      } else if (state.sec <= 0 && state.min <= 0) {
+        if (state.doneNightActionFlag === true) {
+          clearTimeout(state.timerObj);
+          context.emit("start-voting");
           return false;
         }
-        this.min = this.dayPeriodMinute;
-        this.$store.dispatch("modules/clearMessages");
-        this.$store.dispatch("modules/addMessage", "夜が明けました。議論を始めてください。");
-        this.doneNightActionFlag = true;
+        state.min = props.dayPeriodMinute;
+        store.dispatch("modules/clearMessages");
+        store.dispatch(
+          "modules/addMessage",
+          "夜が明けました。議論を始めてください。"
+        );
+        state.doneNightActionFlag = true;
       } else {
-        this.sec--;
+        state.sec--;
       }
-    },
+    };
 
-    start: function() {
-      let self = this;
-      this.timerObj = setInterval(function() {
-        self.count();
+    const start = () => {
+      state.timerObj = setInterval(function () {
+        count();
       }, 1000);
-    },
+    };
 
-    stop: function() {
-      clearInterval(this.timerObj);
-    },
+    onMounted(() => {
+      start();
+    });
 
+    return {
+      state,
+      formatTime,
+      isShowTime,
+      count,
+      start
+    };
   }
 };
 </script>

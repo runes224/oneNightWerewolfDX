@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import Timer from "../components/Timer.vue";
-import VoteUser from "../components/VoteUser.vue";
+import Timer from "@/components/Timer.vue";
+import VoteUser from "@/components/VoteUser.vue";
 import { reactive, computed } from "@vue/composition-api";
 
 export default {
@@ -67,7 +67,9 @@ export default {
       insideCards: computed(() => store.getters["modules/insideCards"]),
       outsideCards: computed(() => store.getters["modules/outsideCards"]),
       finishGameFlag: computed(() => store.getters["modules/isFinishedGame"]),
-      doneNightActionFlag: computed(() => store.getters["modules/isDoneNightAction"]),
+      doneNightActionFlag: computed(
+        () => store.getters["modules/isDoneNightAction"]
+      ),
       startVotingFlag: computed(() => store.getters["modules/isStartVoting"]),
       gameCount: computed(() => store.getters["modules/getGameCount"])
     });
@@ -174,7 +176,7 @@ export default {
       isMyCard,
       startVoting,
       endVoting,
-      nextGame,
+      nextGame
     };
   }
 };
