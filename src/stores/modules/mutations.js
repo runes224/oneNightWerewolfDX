@@ -35,10 +35,10 @@ export const mutations = {
   },
   finishGame(state) {
     state.finishedGameFlag = true;
-    state.doneNightActionFlag = false;
   },
   startGame(state) {
     state.finishedGameFlag = false;
+    state.doneNightActionFlag = false;
     state.gameCount++;
   },
   setVoteState(state, bool) {

@@ -1,6 +1,6 @@
 import Vue from "vue";
-import store from '../stores/store';
 import router from '../router';
+import store from '../stores/store';
 
 const socket = new WebSocket("wss://oy4l1o06be.execute-api.ap-northeast-1.amazonaws.com/prod");
 
@@ -113,10 +113,11 @@ const roles = (receivedData) => {
   store.dispatch('modules/setMyRole', myRole);
   store.dispatch('modules/setInsideCards', insideCards);
   store.dispatch('modules/setOutsideCards', outsideCards);
-  router.push('/playingGame');
-  // router.push('/playingGame').catch(() => {
-  //   router.go({ path: router.currentRoute.path, force: true });
-  // });
+  console.log(router);
+  console.log(router.path);
+  if (router.currentRoute.path === "/choiceRole") {
+    router.push('/playingGame');
+  }
 };
 
 const vote = (receivedData) => {

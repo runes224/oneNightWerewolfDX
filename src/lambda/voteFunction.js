@@ -48,8 +48,8 @@ exports.handler = async (event) => {
     room = await getRecord(roomsParam);
     // ユーザ全員の数を把握する
     users = room.Item.users;
-    if (room.Item.votedUsers !== null) votedUsers = room.Item.votedUsers;
-    if (room.Item.resultOutsideCards !== null && room.Item.resultOutsideCards.length !== 0) resultOutsideCards = room.Item.resultOutsideCards;
+    if (room.Item.votedUsers !== null) {votedUsers = room.Item.votedUsers;}
+    if (room.Item.resultOutsideCards !== null && room.Item.resultOutsideCards.length !== 0) {resultOutsideCards = room.Item.resultOutsideCards;}
   }
   catch (err) {
     console.log('指定したルームIDの部屋が存在しません。');
