@@ -1,15 +1,15 @@
-import Vue from 'vue';
-import App from './App.vue';
-import vuetify from './plugins/vuetify';
-import NumberInputSpinner from 'vue-number-input-spinner';
-import router from './router';
-import store from './stores/store';
-import Socket from './utils/socket';
-import VueCompositionAPI from '@vue/composition-api';
-import VueClipboard from 'vue-clipboard2';
+import App from "./App.vue";
+import NumberInputSpinner from "vue-number-input-spinner";
+import Socket from "./utils/socket";
+import Vue from "vue";
+import VueClipboard from "vue-clipboard2";
+import VueCompositionAPI from "@vue/composition-api";
+import router from "./router";
+import store from "./stores/store";
+import vuetify from "./plugins/vuetify";
 
 Vue.config.productionTip = false;
-Vue.component('NumberInputSpinner', NumberInputSpinner);
+Vue.component("NumberInputSpinner", NumberInputSpinner);
 Vue.prototype.$websocket = Socket;
 Vue.use(VueCompositionAPI);
 Vue.use(VueClipboard);
@@ -19,8 +19,8 @@ new Vue({
   vuetify,
   store,
   // css,
-  created () {
-    localStorage.clear();
+  created() {
+    sessionStorage.clear();
   },
-  render: h => h(App),
-}).$mount('#app');
+  render: (h) => h(App)
+}).$mount("#app");
