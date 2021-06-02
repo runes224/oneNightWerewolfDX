@@ -10,7 +10,7 @@
         <v-form ref="register_name_form" class="input_name">
           <v-text-field
             v-if="!state.createNewRoomFlag"
-            v-model="roomId"
+            v-model="state.roomId"
             label="ルームIDを入力して下さい"
             :rules="[onlyNumbers]"
           ></v-text-field>
