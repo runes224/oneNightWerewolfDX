@@ -30,11 +30,13 @@
 import { reactive, ref, computed } from "@vue/composition-api";
 
 export default {
-  name: "ChoiceRole",
+  name: "RegisterNameForm",
   setup(props, context) {
     const store = context.root.$store;
     const router = context.root.$router;
     const websocket = context.root.$websocket;
+    const register_name_form = ref(null);
+    console.log('register_name_form', register_name_form);
 
     const state = reactive({
       name: "",
@@ -42,7 +44,6 @@ export default {
       createNewRoomFlag: true
     });
 
-    const register_name_form = ref(null);
     const users = computed(() => state.min + state.sec > 0);
 
     store.dispatch("modules/clearMessages");
@@ -67,9 +68,9 @@ export default {
     };
 
     const registerName = () => {
-      if (!register_name_form.validate()) {
-        return;
-      }
+      // if (!register_name_form.validate()) {
+      //   return;
+      // }
       const sendData = {
         action: "registerName",
         name: state.name,
