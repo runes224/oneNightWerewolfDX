@@ -138,6 +138,7 @@ export default {
     };
 
     const startVoting = () => {
+      console.log("startVoting");
       clearMessages();
       addMessage("議論の時間が終わりました。投票をしてください。");
       store.dispatch("modules/setVoteState", true);

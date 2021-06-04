@@ -21,7 +21,7 @@ export default {
     }
   },
   setup(props, context) {
-    const store = store;
+    const store = context.root.$store;
 
     const state = reactive({
       min: 0,
@@ -53,6 +53,7 @@ export default {
         state.sec = 59;
       } else if (state.sec <= 0 && state.min <= 0) {
         if (state.doneNightActionFlag === true) {
+          console.log("state.doneNightActionFlag === true");
           clearTimeout(state.timerObj);
           context.emit("start-voting");
           return false;
